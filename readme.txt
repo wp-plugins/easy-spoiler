@@ -12,7 +12,7 @@ This plugin allows you to easily create a container for a spoiler within your bl
 
 == Description ==
 
-This plugin allows you to easily insert spoilers into your blog, making use shortcodes. An attractive container containing a hint to its content is created with a show/hide button.  The container may contain other shortcakes within it.
+This plugin allows you to easily insert spoilers into your blog, making use shortcodes. An attractive container containing a hint to its content is created with a show/hide button.  The container may contain other shortcodes within it.
 
 PHP5 Required.
 
@@ -30,7 +30,7 @@ Go here for up-to-date usage and examples:
 
 1. Verify that you have PHP5, which is required for this plugin.
 
-2. Upload the `easy-chart-builder` directory to the `/wp-content/plugins/` directory
+2. Upload the `easy-spoiler` directory to the `/wp-content/plugins/` directory
 
 3. Activate the plugin through the 'Plugins' menu in WordPress
 
