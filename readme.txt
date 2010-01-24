@@ -74,7 +74,7 @@ First version
 
 = 0.2.1 =
 
- * Can be inserted within comments, and within widgets.  Comment insertion prevents embedded shortcode expansion (i.e. if the spoiler itself contains other shortcakes, they will not be expanded) to prevent security concerns by end-users.
+ * Can be inserted within comments, and within widgets.  Comment insertion prevents embedded shortcode expansion (i.e. if the spoiler itself contains other shortcodes, they will not be expanded) to prevent security concerns by end-users.
 
 = 0.1 =
 
