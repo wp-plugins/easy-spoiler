@@ -1,9 +1,9 @@
 <?php
 /*
 Plugin Name: Easy Spoiler
-Version: 0.1
+Version: 0.2.1
 Plugin URI: http://www.dyerware.com/main/products/easy-spoiler
-Description: Creates an attractive container to hide a spoiler within a post or page.
+Description: Creates an attractive container to hide a spoiler within a post or page.  Works in comments and widgets as well.
 Author: dyerware
 Author URI: http://www.dyerware.com
 */
@@ -30,17 +30,23 @@ class wpEasySpoiler
     private $spoilerNum = 0;
     
 	public function __construct()
-    {         
+    { 
+       $jsDir = get_option('siteurl') . '/wp-content/plugins/easy-spoiler/js/';
+       wp_register_script('wpEasySpoilerJS', "{$jsDir}easy-spoiler.js", false, '0.1');                     
     }
 
 	function addCSS() 
-	{
-	   
-		echo '<link type="text/css" rel="stylesheet" href="' . plugins_url ( plugin_basename ( dirname ( __FILE__ ) ) ) .'/easy-spoiler.css" />';
-		
-	
+	{	   
+		echo '<link type="text/css" rel="stylesheet" href="' . plugins_url ( plugin_basename ( dirname ( __FILE__ ) ) ) .'/easy-spoiler.css" />';	
 	}
  
+	public function output_scripts ()
+    {
+        
+       wp_enqueue_script('wpEasySpoilerJS');
+        
+    }
+     
     private function translateNumerics(&$value, $key) {
         
         if ($value == 'false') {
@@ -50,13 +56,14 @@ class wpEasySpoiler
         }
         
     }        
-            
-	public function process_shortcode($atts, $content=null, $code="") 
+        
+	    
+	public function process_shortcode($atts, $content=null, $code="", $expand=TRUE) 
 	{  
 	   	$haveIssue = FALSE;
 	    $nearKey = "";
 	    $nearValue = "";
-	    
+	    	           
 	    if ($atts)
 	    {
     	    foreach ($atts as $key => $att)
@@ -87,7 +94,17 @@ class wpEasySpoiler
 	         
 	       	       
 	    $this->spoilerNum++;
-		$rowDiv = 'spoilerDiv' . $this->spoilerNum;
+	    
+	    $randomatic = mt_rand(0,0x7fff);
+	    $randomatic = $randomatic << 16;
+	    global $post;
+	    if ($post)
+	    {
+            $randomatic = $randomatic | 0x8000;            
+	    }	    
+	    
+	    $r = $randomatic | $this->spoilerNum;
+        $rowDiv = 'spoilerDiv' . base_convert($r, 10, 16);
 
 		$rowDiv2 = '"' . $rowDiv . '"';
 		$spoilerbutton = "'" . $rowDiv . '_action' . "'";
@@ -109,15 +126,14 @@ class wpEasySpoiler
 	    }
         else
         {
-           $scontent = do_shortcode($content);
-           
-           /*
-           	if (function_exists('json_encode')) {
-        	   $jscontent = json_encode($scontent);
-            } else {
-			   require_once('json_encode.php');
-		    }
-		    */
+            if ($expand == TRUE)
+            {
+                $scontent = do_shortcode($content);
+            }
+            else
+            {
+                $scontent = $content;
+            }
         }
 
         $button = "'wpSpoilerToggle(" . $rowDiv2 . ");'";
@@ -127,12 +143,9 @@ class wpEasySpoiler
 
 <table class='easySpoilerTable' border='0' style='text-align:center;' align='center' bgcolor='FFFFFF'>
 
-<head>
 <tr><th class='easySpoilerTitleA'  style='text-align:left;vertical-align:middle;font-size:120%'>{$spoilertitle}</th>
 <th class='easySpoilerTitleB'  style='text-align:right;vertical-align:middle;font-size:100%'><INPUT type='button' id={$spoilerbutton} class='easySpoilerButton' value='Show' onclick={$button} align='right'></th>
-</th></tr>
-</head>
-
+</tr>
 
 <tr><td class='easySpoilerRow' colspan='2'><div id={$rowDiv} class='easySpoilerSpoils' style='display:none; white-space:wrap; vertical-align:middle;'>
 {$scontent}
@@ -147,39 +160,76 @@ class wpEasySpoiler
 <tr><td class='easySpoilerEnd' colspan='2'></td></tr>
 </table>
 </div>
-
 </div>
-<script type="text/javascript">
-//<![CDATA[
-function wpSpoilerToggle(id) {
-    var myName = id + '_action';
-    var me = document.getElementById(myName);
-    var e = document.getElementById(id);
-    
-    if(e.style.display == 'block')
-    {
-        e.style.display = 'none';
-        me.value='Show';
-    }
-    else
-    {        
-        e.style.display = 'block';
-        me.value='Hide';
-    }
-}
-//]]>
-</script>
 ecbCode;
    }
+   
+   
+   // This is for support within comments:  NO expansion of shortcodes
+   // within spoiler as users could invoke any shortcode you have installed.
+   public function do_shortcode_in_comment($content) {
+    	global $shortcode_tags;
+    
+    	if (empty($shortcode_tags) || !is_array($shortcode_tags))
+    		return $content;
+
+    	$pattern = '(.?)\[(spoiler)\b(.*?)(?:(\/))?\](?:(.+?)\[\/\2\])?(.?)';
+    	return preg_replace_callback('/'.$pattern.'/s', 
+    	       'do_easyspoiler_tag_in_comment', $content);
+    }
+    
+       
+   // This is for support in widgets: Will do full expansion of any shortcode
+   // within spoiler.
+   public function do_shortcode($content) {
+    	global $shortcode_tags;
+    
+    	if (empty($shortcode_tags) || !is_array($shortcode_tags))
+    		return $content;
+    	$pattern = '(.?)\[(spoiler)\b(.*?)(?:(\/))?\](?:(.+?)\[\/\2\])?(.?)';
+    	return preg_replace_callback('/'.$pattern.'/s', 'do_shortcode_tag', $content);
+    }
 }  
 
 // Instantiate our class
 $wpEasySpoiler= new wpEasySpoiler();
+
+
+/*
+ * Our comment support for this shortcut.  We prevent shortcut expansion for 
+ * security reasons.
+ */
+function do_easyspoiler_tag_in_comment($m)
+    {  
+        global $shortcode_tags;
+        
+       	// allow [[foo]] syntax for escaping a tag
+    	if ($m[1] == '[' && $m[6] == ']') {
+    		return substr($m[0], 1, -1);
+    	}
+    
+    	$tag = $m[2];
+    	$attr = shortcode_parse_atts($m[3]);
+
+    	if ( isset($m[5]) ) {
+    		// enclosing tag - extra parameter
+    		return $m[1] . call_user_func($shortcode_tags[$tag], $attr, $m[5], $m[2], FALSE) . $m[6];
+    	} else {
+    		// self-closing tag
+    		return $m[1] . call_user_func($shortcode_tags[$tag], $attr, NULL, $m[2], FALSE) . $m[6];
+    	}
+    }
+
 
 /**
  * Add filters and actions
  */
 
 add_action('wp_head', array($wpEasySpoiler, 'addCSS'));
+add_action('wp_print_scripts', array($wpEasySpoiler, 'output_scripts'));
+
 add_shortcode('spoiler',array($wpEasySpoiler, 'process_shortcode'));
+
+add_filter('comment_text', array($wpEasySpoiler, 'do_shortcode_in_comment'));
+add_filter('widget_text', array($wpEasySpoiler, 'do_shortcode'));
 ?>
