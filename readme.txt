@@ -5,14 +5,24 @@ Donate link: http://www.dyerware.com/main/products/easy-spoiler/easy-spoiler-plu
 Tags: spoiler,hint,tip,answer,hidden,hide,mobile,shortcode,dyerware
 Requires at least: 2.8
 Tested up to: 2.9.1
-Stable tag: 0.1
+Stable tag: 0.2.1
 
-This plugin allows you to easily create a container for a spoiler within your blog by use of shortcodes.
+This plugin allows you to easily create a container for a spoiler within your blog by use of shortcodes.  It works in pages, posts, comments, and widgets.
 
 
 == Description ==
 
-This plugin allows you to easily insert spoilers into your blog, making use shortcodes. An attractive container containing a hint to its content is created with a show/hide button.  The container may contain other shortcodes within it.
+This plugin allows you to easily insert spoilers into your blog, making use shortcodes. An attractive container containing a hint to its content is created with a show/hide button.  The container may contain other shortcodes within it.  
+
+You can use this shortcode inside 
+ * pages
+ * posts
+ * comments
+ * widgets
+
+Note that if you use it within comments, it is smart enough to not expand embedded shortcakes as this would allow end-users posting comments to invoke any of your site's shortcodes.
+
+It also ensure that it does not turn on any shortcode within widgets and comments, but only itself.
 
 PHP5 Required.
 
@@ -44,7 +54,7 @@ For an up-to-date FAQ, please visit:
 
 == Screenshots ==
 
-1. A plain spoiler, opened
+1. A plain spoiler, closed
 
 2. A spoiler with title hint, opened
 
@@ -53,11 +63,18 @@ For an up-to-date FAQ, please visit:
 
 == Upgrade Notice ==
 
+= 0.2.1 =
+Now supports being embedded within comments and widgets.
+
 = 0.1 =
 First version
 
 
 == Changelog ==
+
+= 0.2.1 =
+
+ * Can be inserted within comments, and within widgets.  Comment insertion prevents embedded shortcode expansion (i.e. if the spoiler itself contains other shortcakes, they will not be expanded) to prevent security concerns by end-users.
 
 = 0.1 =
 
