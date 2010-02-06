@@ -1,6 +1,6 @@
 /**
  * Handle: easySpoiler
- * Version: 0.1
+ * Version: 0.2
  * Enqueue: true
  *
  * Author: dyerware
@@ -24,5 +24,18 @@ function wpSpoilerToggle(id)
     {        
         e.style.display = 'block';
         me.value='Hide';
+    }
+}
+
+function wpSpoilerHide(id) 
+{
+    var myName = id + '_action';
+    var me = document.getElementById(myName);
+    var e = document.getElementById(id);
+    
+    if(e.style.display == 'block')
+    {      
+        e.style.display = 'none';
+        me.value='Show';
     }
 }

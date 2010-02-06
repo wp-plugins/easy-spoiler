@@ -5,14 +5,13 @@ Donate link: http://www.dyerware.com/main/products/easy-spoiler/easy-spoiler-plu
 Tags: spoiler,hint,tip,answer,hidden,hide,mobile,shortcode,dyerware
 Requires at least: 2.8
 Tested up to: 2.9.1
-Stable tag: 0.2.1
+Stable tag: 0.3
 
-This plugin allows you to create a container for spoilers within pages, posts, comments, and widgets.
-
+This plugin allows you to create a container for spoilers within pages, posts, comments, and widgets.  Also supports spoiler groups.
 
 == Description ==
 
-This plugin allows you to easily create spoilers with ashortcode. An attractive container with a hint to its content and a show/hide button are created.  
+This plugin allows you to easily create spoilers with a shortcode. An attractive container with a hint to its content and a show/hide button are created.  
 
 You can put spoilers within
  
@@ -59,8 +58,12 @@ For an up-to-date FAQ, please visit:
 
 3. A spoiler with custom intro, title hint, and complex contents (in this case, easy chart builder) 
 
+4. A spoiler group
 
 == Upgrade Notice ==
+
+= 0.3 =
+ * Group support: Cluster related spoilers together for graphical and functional grouping.
 
 = 0.2.1 =
  * Now supports being embedded within comments and widgets.
@@ -70,6 +73,10 @@ For an up-to-date FAQ, please visit:
 
 
 == Changelog ==
+
+= 0.3 =
+
+ * With the new optional spoilergroup tag you can enclose multiple spoiler tags together.  Easy Spoiler will visually group them and auto-close any related spoiler when the user opens another from the same group.
 
 = 0.2.1 =
 

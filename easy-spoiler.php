@@ -1,9 +1,9 @@
 <?php
 /*
 Plugin Name: Easy Spoiler
-Version: 0.2.1
+Version: 0.3
 Plugin URI: http://www.dyerware.com/main/products/easy-spoiler
-Description: Creates an attractive container to hide a spoiler within a post or page.  Works in comments and widgets as well.
+Description: Creates an attractive container to hide a spoiler within a post or page.  Works in comments and widgets as well.  Also supports clustering spoilers into groups.
 Author: dyerware
 Author URI: http://www.dyerware.com
 */
@@ -28,11 +28,15 @@ Author URI: http://www.dyerware.com
 class wpEasySpoiler
 {
     private $spoilerNum = 0;
+    private $spoilerGroupNum = 0;
+    private $currentGroup = 0;
+    private $currentGroupSpoiler = 0;
+    private $spoilerArray = Array();
     
 	public function __construct()
     { 
        $jsDir = get_option('siteurl') . '/wp-content/plugins/easy-spoiler/js/';
-       wp_register_script('wpEasySpoilerJS', "{$jsDir}easy-spoiler.js", false, '0.1');                     
+       wp_register_script('wpEasySpoilerJS', "{$jsDir}easy-spoiler.js", false, '0.2');                     
     }
 
 	function addCSS() 
@@ -57,7 +61,76 @@ class wpEasySpoiler
         
     }        
         
-	    
+
+	public function process_group($atts, $content=null, $code="") 
+	{  
+	   	$haveIssue = FALSE;
+	    $nearKey = "";
+	    $nearValue = "";
+	    	           
+	    if ($atts)
+	    {
+    	    foreach ($atts as $key => $att)
+    	    {
+    	       $keyval = (int)$key;
+    	       if ($keyval != 0 || strpos($key, "0") === 0)
+    	       {
+                    $haveIssue = TRUE;
+                    $nearKey = $keyval;
+                    $nearValue = $att;
+                    break;
+    	       }
+    	    }
+	    }
+
+	    if ($haveIssue === TRUE)
+	       return "<p><b>EASY SPOILER SHORTCODE ERROR</b><lu><li>Check for misspelled parameters (case matters)</li><li>Check for new lines (all must reside on one long line)</li><li>Error near [" . $key . "], [" . $att . "]</li></lu><br/>For assistance, please visit <a>http://www.dyerware.com/main/products/easy-spoiler</a></p>";
+	       
+        // A group has no arguments.
+        $this->spoilerGroupNum++; 
+        $this->currentGroup = $this->spoilerGroupNum;
+        $this->currentGroupSpoiler = 0;
+        $this->spoilerArray = Array();
+                           
+        // Bust out our children
+        $scontent = do_shortcode($content);
+        
+        
+        $toggleList = "";
+        foreach ($this->spoilerArray as $entry)
+    	{
+    	   $toggleList = $toggleList . "wpSpoilerHide('".$entry."');";
+    	}
+    	                           
+        // Custom group action that ensures only ONE spoiler is opened at once.
+        $groupScript = "function wpSpoilerGroupToggle_" . $this->currentGroup . "(id) {" .
+                           "var myName = id + '_action';" .
+                           "var e = document.getElementById(id);".
+                           "if(e.style.display == 'block')".
+                           "{wpSpoilerToggle(id);}".
+                           "else".
+                           "{" . $toggleList . "wpSpoilerToggle(id);}".
+                        "}";
+                        
+                                
+        $this->currentGroup = 0;
+        $this->currentGroupSpoiler = 0;
+      
+        return <<<ecbCode
+<div style='display:none'>
+{$scontent} 
+</div>    
+<div class='easySpoilerGroupWrapperLast'><div class='easySpoilerConclude'><table class='easySpoilerTable'  border='0' style='text-align:center;' frame='box' align='center' bgcolor='FFFFFF'>
+<tr><th class='easySpoilerEnd' style='width:100%'></th>
+<td class='easySpoilerEnd' style='white-space:nowrap;' colspan='2'></td></tr>             
+<tr><td class='easySpoilerEnd' colspan='2'></td></tr>
+</table>
+</div>
+<script type='text/javascript'>{$groupScript}</script>
+</div>
+ecbCode;
+	}
+		    
 	public function process_shortcode($atts, $content=null, $code="", $expand=TRUE) 
 	{  
 	   	$haveIssue = FALSE;
@@ -137,30 +210,58 @@ class wpEasySpoiler
         }
 
         $button = "'wpSpoilerToggle(" . $rowDiv2 . ");'";
-	
+	    $begin = "";
+	    $end = "";
+	    $conclude = "";
+	    $buttonCSS = "'easySpoilerButton'";
+	    
+	    // Group features vs standalone
+	    if ($this->currentGroup == 0)
+	    {
+	      $titlea = "'easySpoilerTitleA'";
+	      $titleb = "'easySpoilerTitleB'";
+	      $conclude = "<div class='easySpoilerConclude'><table class='easySpoilerTable' border='0' style='text-align:center;' frame='box' align='center' bgcolor='FFFFFF'><tr><th class='easySpoilerEnd' style='width:100%'></th><td class='easySpoilerEnd' style='white-space:nowrap;' colspan='2'></td></tr><tr><td class='easySpoilerEnd' colspan='2'></td></tr></table></div>";
+	    }
+	    else
+	    {
+	       array_push($this->spoilerArray, $rowDiv);
+	       $button = "'wpSpoilerGroupToggle_" . $this->currentGroup . "(". $rowDiv2 .");'";
+	       $begin = "</div>";
+	       $end = "<div style='display:none'>";
+	       if ($this->currentGroupSpoiler == 0)
+	       {
+	           $tableCSS = "'easySpoilerGroupWrapperFirst'";
+	           $titlea = "'easySpoilerTitleA'";
+	           $titleb = "'easySpoilerTitleB'";
+	       }
+	       else
+	       {
+	           $tableCSS = "'easySpoilerGroupWrapper'";
+	           $titlea = "'easySpoilerGroup'";
+	           $titleb = "'easySpoilerGroup'";
+	           $buttonCSS = "'easySpoilerGroupButton'";
+	       }
+	       
+	       $this->currentGroupSpoiler++;
+	    }
+	    
         return <<<ecbCode
+{$begin}
 <div class={$tableCSS}>
 
 <table class='easySpoilerTable' border='0' style='text-align:center;' align='center' bgcolor='FFFFFF'>
 
-<tr><th class='easySpoilerTitleA'  style='text-align:left;vertical-align:middle;font-size:120%'>{$spoilertitle}</th>
-<th class='easySpoilerTitleB'  style='text-align:right;vertical-align:middle;font-size:100%'><INPUT type='button' id={$spoilerbutton} class='easySpoilerButton' value='Show' onclick={$button} align='right'></th>
+<tr><th class={$titlea}  style='text-align:left;vertical-align:middle;font-size:120%'>{$spoilertitle}</th>
+<th class={$titleb}  style='text-align:right;vertical-align:middle;font-size:100%'><INPUT type='button' id={$spoilerbutton} class={$buttonCSS} value='Show' onclick={$button} align='right'></th>
 </tr>
 
 <tr><td class='easySpoilerRow' colspan='2'><div id={$rowDiv} class='easySpoilerSpoils' style='display:none; white-space:wrap; vertical-align:middle;'>
 {$scontent}
 </div></td></tr>
 </table>
-
-
-<div class='easySpoilerConclude'><table class='easySpoilerTable'  border='0' style='text-align:center;' frame='box' align='center' bgcolor='FFFFFF'>
-<tr><th class='easySpoilerEnd' style='width:100%'></th>
-<td class='easySpoilerEnd' style='white-space:nowrap;' colspan='2'></td></tr>
-                   
-<tr><td class='easySpoilerEnd' colspan='2'></td></tr>
-</table>
+{$conclude}
 </div>
-</div>
+{$end}
 ecbCode;
    }
    
@@ -228,6 +329,7 @@ function do_easyspoiler_tag_in_comment($m)
 add_action('wp_head', array($wpEasySpoiler, 'addCSS'));
 add_action('wp_print_scripts', array($wpEasySpoiler, 'output_scripts'));
 
+add_shortcode('spoilergroup',array($wpEasySpoiler, 'process_group'));
 add_shortcode('spoiler',array($wpEasySpoiler, 'process_shortcode'));
 
 add_filter('comment_text', array($wpEasySpoiler, 'do_shortcode_in_comment'));
