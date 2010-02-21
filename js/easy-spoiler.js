@@ -1,6 +1,6 @@
 /**
  * Handle: easySpoiler
- * Version: 0.2
+ * Version: 0.3
  * Enqueue: true
  *
  * Author: dyerware
@@ -9,7 +9,7 @@
  * Support: support@dyerware.com
  */
  
-function wpSpoilerToggle(id) 
+function wpSpoilerToggle(id, doAnim, showName, hideName) 
 {
     var myName = id + '_action';
     var me = document.getElementById(myName);
@@ -17,25 +17,32 @@ function wpSpoilerToggle(id)
     
     if(e.style.display == 'block')
     {
-        e.style.display = 'none';
-        me.value='Show';
+        if (doAnim)
+            {jQuery("#" + id).slideUp('fast');}
+        else
+            {e.style.display = 'none';}
+        me.value=showName;
     }
     else
-    {        
+    {     
+        if (doAnim)
+            {jQuery("#" + id).fadeIn('fast');} 
         e.style.display = 'block';
-        me.value='Hide';
+        me.value=hideName;
     }
 }
 
-function wpSpoilerHide(id) 
+function wpSpoilerHide(id, doAnim, showName) 
 {
     var myName = id + '_action';
     var me = document.getElementById(myName);
     var e = document.getElementById(id);
     
     if(e.style.display == 'block')
-    {      
+    {   
+        if (doAnim)
+            {jQuery("#" + id).slideUp('fast');}
         e.style.display = 'none';
-        me.value='Show';
+        me.value=showName;
     }
 }

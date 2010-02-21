@@ -32,11 +32,38 @@ class wpEasySpoiler
     private $currentGroup = 0;
     private $currentGroupSpoiler = 0;
     private $spoilerArray = Array();
+ 
+ 	var $info = array(
+		'title' => 'Easy Spoiler',
+		'version' => '0.4');
+		
+	// Database Settings
+    var $DEF_INTRO = 'Spoiler Inside';
+	var $DEF_TITLE = '';
+	var $DEF_STYLE = 'easySpoilerWrapper';
+	var $GBL_SHOW = 'Show';
+	var $GBL_HIDE = 'Hide';
+	var $GBL_ANIM = true;
+	
+	var $op; 
     
 	public function __construct()
     { 
        $jsDir = get_option('siteurl') . '/wp-content/plugins/easy-spoiler/js/';
-       wp_register_script('wpEasySpoilerJS', "{$jsDir}easy-spoiler.js", false, '0.2');                     
+       wp_register_script('wpEasySpoilerJS', "{$jsDir}easy-spoiler.js", false, '0.3'); 
+       
+       $this->init_options_map();
+       $this->load_options();
+
+	   if (is_admin()) 
+	   {
+			add_action('admin_menu', array(&$this, 'add_admin_menu'));
+	   }                    
+    }
+
+    function CTXID() 
+    { 
+        return get_class($this); 
     }
 
 	function addCSS() 
@@ -44,15 +71,76 @@ class wpEasySpoiler
 		echo '<link type="text/css" rel="stylesheet" href="' . plugins_url ( plugin_basename ( dirname ( __FILE__ ) ) ) .'/easy-spoiler.css" />';	
 	}
  
-	public function output_scripts ()
-    {
-        
-       wp_enqueue_script('wpEasySpoilerJS');
-        
-    }
+ 	function add_admin_menu() 
+ 	{
+		$title = 'Easy Spoiler';
+		add_options_page($title, $title, 10, __FILE__, array(&$this, 'handle_options'));
+	}
+	
+	function init_options_map() 
+	{
+		$opnames = array(
+			'DEF_INTRO', 'DEF_TITLE', 'DEF_STYLE', 'GBL_SHOW', 'GBL_HIDE', 'GBL_ANIM'
+		);
+		$this->op = (object) array();
+		foreach ($opnames as $name)
+			$this->op->$name = &$this->$name;
+	}
+	
+	function load_options() 
+	{
+		$context = $this->CTXID();
+		$options = $this->op;
+		$saved = get_option($context);
+		if ($saved) foreach ( (array) $options as $key => $val ) 
+		{
+			if (!isset($saved->$key)) continue;
+			$this->assign_to($options->$key, $saved->$key);
+		}
+		// Backward compatibility hack, to be removed in a future version
+		//$this->migrateOptions($options, $context);
+	}
+		
+	function handle_options() 
+	{
+		$actionURL = $_SERVER['REQUEST_URI'];
+		$context = $this->CTXID();
+		$options = $this->op;
+		$updated = false;
+		$status = '';
+		if ( $_POST['action'] == 'update' ):
+			check_admin_referer($context);
+			if (isset($_POST['submit'])):
+				foreach ($options as $key => $val):
+					$bistate = is_bool($val);
+					if ($bistate):
+						$newval = isset($_POST[$key]);
+					else:
+						if ( !isset($_POST[$key]) ) continue;
+						$newval = trim( $_POST[$key] );
+					endif;
+					if ( $newval == $val ) continue;
+					$this->assign_to($options->$key, $newval);
+					$updated = true; $status = 'updated';
+				endforeach;
+				if ($updated): update_option($context, $options); endif;
+			elseif (isset($_POST['reset'])):
+				delete_option($context);
+				$updated = true; $status = 'reset';
+			endif;
+		endif;
+		include 'easy-spoiler-settings.php';
+	}
+	
+	private function assign_to(&$var, $value) 
+	{
+		settype($value, gettype($var));
+		$var = $value;
+	}
+	
      
-    private function translateNumerics(&$value, $key) {
-        
+    private function translate_numerics(&$value, $key) 
+    {   
         if ($value == 'false') {
         	$value = false;
         } elseif ($value == 'true') {
@@ -60,7 +148,12 @@ class wpEasySpoiler
         }
         
     }        
-        
+     
+    public function output_scripts ()
+    {
+       wp_enqueue_script('jquery');   
+       wp_enqueue_script('wpEasySpoilerJS');   
+    }   
 
 	public function process_group($atts, $content=null, $code="") 
 	{  
@@ -97,9 +190,13 @@ class wpEasySpoiler
         
         
         $toggleList = "";
+        $doAnim = 'false';
+        if ($this->GBL_ANIM)
+            $doAnim = 'true';
+        
         foreach ($this->spoilerArray as $entry)
     	{
-    	   $toggleList = $toggleList . "wpSpoilerHide('".$entry."');";
+    	   $toggleList = $toggleList . "wpSpoilerHide('".$entry."'," . $doAnim . ",'".$this->GBL_SHOW. "');";
     	}
     	                           
         // Custom group action that ensures only ONE spoiler is opened at once.
@@ -107,9 +204,9 @@ class wpEasySpoiler
                            "var myName = id + '_action';" .
                            "var e = document.getElementById(id);".
                            "if(e.style.display == 'block')".
-                           "{wpSpoilerToggle(id);}".
+                           "{wpSpoilerToggle(id," . $doAnim. ",'" . $this->GBL_SHOW . "','" .$this->GBL_HIDE. "');}".
                            "else".
-                           "{" . $toggleList . "wpSpoilerToggle(id);}".
+                           "{" . $toggleList . "wpSpoilerToggle(id," .$doAnim.  ",'" .$this->GBL_SHOW."','" .$this->GBL_HIDE. "');}".
                         "}";
                         
                                 
@@ -156,14 +253,14 @@ ecbCode;
 	       return "<p><b>EASY SPOILER SHORTCODE ERROR</b><lu><li>Check for misspelled parameters (case matters)</li><li>Check for new lines (all must reside on one long line)</li><li>Error near [" . $key . "], [" . $att . "]</li></lu><br/>For assistance, please visit <a>http://www.dyerware.com/main/products/easy-spoiler</a></p>";
 	       
         $spoilerConfig = shortcode_atts( array(
-                'intro' => 'Spoiler Inside',
-                'title' => '',
-                'tablecss' => 'easySpoilerWrapper')
+                'intro' => $this->DEF_INTRO,
+                'title' => $this->DEF_TITLE,
+                'tablecss' => $this->DEF_STYLE)
 			    , $atts );
 
 
 	    // Translate strings to numerics
-	    array_walk($spoilerConfig, array($this, 'translateNumerics'));
+	    array_walk($spoilerConfig, array($this, 'translate_numerics'));
 	         
 	       	       
 	    $this->spoilerNum++;
@@ -209,7 +306,13 @@ ecbCode;
             }
         }
 
-        $button = "'wpSpoilerToggle(" . $rowDiv2 . ");'";
+        $show = '"' . $this->GBL_SHOW . '"';
+        $hide = '"' . $this->GBL_HIDE . '"';
+        $doAnim = 'false';
+        if ($this->GBL_ANIM)
+            $doAnim = 'true';
+            
+        $button = "'wpSpoilerToggle(" . $rowDiv2 . "," .$doAnim. "," .$show. "," .$hide. ");'";
 	    $begin = "";
 	    $end = "";
 	    $conclude = "";
@@ -252,12 +355,12 @@ ecbCode;
 <table class='easySpoilerTable' border='0' style='text-align:center;' align='center' bgcolor='FFFFFF'>
 
 <tr><th class={$titlea}  style='text-align:left;vertical-align:middle;font-size:120%'>{$spoilertitle}</th>
-<th class={$titleb}  style='text-align:right;vertical-align:middle;font-size:100%'><INPUT type='button' id={$spoilerbutton} class={$buttonCSS} value='Show' onclick={$button} align='right'></th>
+<th class={$titleb}  style='text-align:right;vertical-align:middle;font-size:100%'><INPUT type='button' id={$spoilerbutton} class={$buttonCSS} value={$show} onclick={$button} align='right'></th>
 </tr>
 
-<tr><td class='easySpoilerRow' colspan='2'><div id={$rowDiv} class='easySpoilerSpoils' style='display:none; white-space:wrap; vertical-align:middle;'>
+<tr><td class='easySpoilerRow' colspan='2'><div><div id={$rowDiv} class='easySpoilerSpoils' style='display:none; white-space:wrap; vertical-align:middle;'>
 {$scontent}
-</div></td></tr>
+</div></div></td></tr>
 </table>
 {$conclude}
 </div>
@@ -327,6 +430,9 @@ function do_easyspoiler_tag_in_comment($m)
  */
 
 add_action('wp_head', array($wpEasySpoiler, 'addCSS'));
+
+add_action( 'admin_menu',      array($wpEasySpoiler, 'register_settings_page') );
+//add_action( 'admin_init',      array($wpEasySpoiler, 'register_setting') );
 add_action('wp_print_scripts', array($wpEasySpoiler, 'output_scripts'));
 
 add_shortcode('spoilergroup',array($wpEasySpoiler, 'process_group'));
@@ -334,4 +440,6 @@ add_shortcode('spoiler',array($wpEasySpoiler, 'process_shortcode'));
 
 add_filter('comment_text', array($wpEasySpoiler, 'do_shortcode_in_comment'));
 add_filter('widget_text', array($wpEasySpoiler, 'do_shortcode'));
+
+
 ?>
