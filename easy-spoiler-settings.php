@@ -1,8 +1,3 @@
-/*
- * http://www.dyerware.com
- * Support: support@dyerware.com
-*/
-
 <?php
 if ( !defined('ABSPATH') )
 	exit("Sorry, you are not allowed to access this page directly.");
