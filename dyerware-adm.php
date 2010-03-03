@@ -12,6 +12,10 @@ $infomercials = array(
 		'url' => "http://www.dyerware.com/main/products/easy-spoiler/easy-spoiler-faq.html",
 		'icon' => "http://www.dyerware.com/images/help.png" ),
 	array(
+		'text' => 'Forum',
+		'url' => "http://www.dyerware.com/main/forum/easy-spoiler",
+		'icon' => "http://www.dyerware.com/images/pencil.png" ),		
+	array(
 		'text' => 'Rate',
 		'url' => "http://wordpress.org/extend/plugins/easy-spoiler",
 		'icon' => "http://www.dyerware.com/images/favorites.png" ),
