@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Easy Spoiler
-Version: 0.4.1
+Version: 0.4.2
 Plugin URI: http://www.dyerware.com/main/products/easy-spoiler
 Description: Creates an attractive container to hide a spoiler within a post or page.  Works in comments and widgets as well.  Also supports clustering spoilers into groups.
 Author: dyerware
@@ -32,7 +32,7 @@ class wpEasySpoiler
     private $currentGroup = 0;
     private $currentGroupSpoiler = 0;
     private $spoilerArray = Array();
-		
+
 	// Database Settings
     var $DEF_INTRO = 'Spoiler Inside';
 	var $DEF_TITLE = '';

@@ -5,7 +5,7 @@ Donate link: http://www.dyerware.com/main/products/easy-spoiler/easy-spoiler-plu
 Tags: spoiler,hint,tip,answer,hidden,hide,mobile,shortcode,dyerware
 Requires at least: 2.8
 Tested up to: 2.9.2
-Stable tag: 0.4.1
+Stable tag: 0.4.2
 
 This plugin allows you to create a container for spoilers within pages, posts, comments, and widgets.  Also supports spoiler groups.
 
@@ -64,6 +64,9 @@ For an up-to-date FAQ, please visit:
 
 == Upgrade Notice ==
 
+= 0.4.2=
+ * Small admin panel bugfix, and link to support form in admin panel
+
 = 0.4.1=
  * Empty function call fix
 
@@ -81,6 +84,10 @@ For an up-to-date FAQ, please visit:
 
 
 == Changelog ==
+
+= 0.4.2=
+ * Small admin panel bugfix
+ * Link to support form in admin panel
 
 = 0.4.1 =
  * Empty function call removed
