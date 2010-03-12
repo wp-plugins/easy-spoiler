@@ -1,4 +1,5 @@
 <?php
+// This source originated from Hackadellic's TOC plugin
 if ( !defined('ABSPATH') )
 	exit("Sorry, you are not allowed to access this page directly.");
 if ( !isset($this) || !is_a($this, wpEasySpoiler) )
@@ -7,7 +8,7 @@ if ( !isset($this) || !is_a($this, wpEasySpoiler) )
 $sections = array(
 	(object) array(
 		'title' => 'Parameter Defaults',
-		'help' => 'Fill in the desired defaults for the following options.  You can override these within the shortcut itself by specifying them directly.',
+		'help' => 'Fill in the desired defaults for the following options.  You can override these within the shortcode itself by specifying them directly.',
 		'options' => array(
 			(object) array(
 				'title' => 'Default Intro Text',
@@ -41,7 +42,19 @@ $sections = array(
 				'style' => 'max-width: 5em',
 				'text' => 'Do Animations',
 				'help' => 'You can turn off animations that use the jQuery library if you suspect a plugin conflict, or if you want faster open/close action.' ),				
-		)),		
+		)),	
+		
+	(object) array(
+		'title' => 'Editor Settings',
+		'help' => 'Choose options related to your blog editor.',
+		'options' => array(
+			(object) array(
+				'title' => 'Editor Buttons',
+				'key' => 'GBL_EDITORBUTTONS',
+				'style' => 'max-width: 5em',
+				'text' => 'Add helper buttons to HTML editor',
+				'help' => 'If checked, buttons for inserting a spoiler or spoilter group are added to your editor.  Select the HTML you want hidden and click on spoiler.  Select the spoilers you want grouped and click on spoilergroup.'),
+		)),				
 	);
 
 ?>

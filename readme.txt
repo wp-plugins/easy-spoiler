@@ -5,13 +5,15 @@ Donate link: http://www.dyerware.com/main/products/easy-spoiler/easy-spoiler-plu
 Tags: spoiler,hint,tip,answer,hidden,hide,mobile,shortcode,dyerware
 Requires at least: 2.8
 Tested up to: 2.9.2
-Stable tag: 0.4.2
+Stable tag: 0.5
 
 This plugin allows you to create a container for spoilers within pages, posts, comments, and widgets.  Also supports spoiler groups.
 
 == Description ==
 
 This plugin allows you to easily create spoilers with a shortcode. An attractive, animated container with a hint to its content and a show/hide button are created.   Admin control panel allow you to tailor various aspects of the spoiler.
+
+Toolbar buttons are (optionally) added to the HTML editor to make adding spoilers in your posts very easy.  Just highlight the HTML you want hidden and click on 'spoiler'.  Or, highlight a series of spoilers and click on 'spoiler group' for the grouping effect.
 
 You can put spoilers within
  
@@ -64,6 +66,9 @@ For an up-to-date FAQ, please visit:
 
 == Upgrade Notice ==
 
+= 0.5 =
+ * Added HTML editor integration.  You can turn off the buttons via a new admin panel option.
+
 = 0.4.2=
  * Small admin panel bugfix, and link to support form in admin panel
 
@@ -85,7 +90,10 @@ For an up-to-date FAQ, please visit:
 
 == Changelog ==
 
-= 0.4.2=
+= 0.5 =
+ * Added HTML editor integration.  You can turn off the buttons via a new admin panel option.
+
+= 0.4.2 =
  * Small admin panel bugfix
  * Link to support form in admin panel
 

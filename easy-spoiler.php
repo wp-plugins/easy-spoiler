@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Easy Spoiler
-Version: 0.4.2
+Version: 0.5
 Plugin URI: http://www.dyerware.com/main/products/easy-spoiler
 Description: Creates an attractive container to hide a spoiler within a post or page.  Works in comments and widgets as well.  Also supports clustering spoilers into groups.
 Author: dyerware
@@ -24,7 +24,9 @@ Author URI: http://www.dyerware.com
     along with this program; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
-  
+/*
+    Admin panel code lifted (and expanded upon) from Hackadelic TOC plugin.  GREAT design.
+*/  
 class wpEasySpoiler
 {
     private $spoilerNum = 0;
@@ -40,6 +42,7 @@ class wpEasySpoiler
 	var $GBL_SHOW = 'Show';
 	var $GBL_HIDE = 'Hide';
 	var $GBL_ANIM = true;
+	var $GBL_EDITORBUTTONS = true;
 	
 	var $op; 
     
@@ -76,7 +79,7 @@ class wpEasySpoiler
 	function init_options_map() 
 	{
 		$opnames = array(
-			'DEF_INTRO', 'DEF_TITLE', 'DEF_STYLE', 'GBL_SHOW', 'GBL_HIDE', 'GBL_ANIM'
+			'DEF_INTRO', 'DEF_TITLE', 'DEF_STYLE', 'GBL_SHOW', 'GBL_HIDE', 'GBL_ANIM', 'GBL_EDITORBUTTONS'
 		);
 		$this->op = (object) array();
 		foreach ($opnames as $name)
@@ -148,9 +151,29 @@ class wpEasySpoiler
     public function output_scripts ()
     {
        wp_enqueue_script('jquery');   
-       wp_enqueue_script('wpEasySpoilerJS');   
+       wp_enqueue_script('wpEasySpoilerJS');  
+       
+       $this->init_html_editor_tags(); 
     }   
 
+    function init_html_editor_tags()
+    {
+        
+        if (is_admin() == true && $this->GBL_EDITORBUTTONS == true)
+        {    
+            echo '<script type="text/javascript">';
+?>
+if(typeof edButtons!="undefined")
+{
+edButtons[edButtons.length]=new edButton('dyerware_es','spoiler','[spoiler]','[/spoiler]','spoiler');
+edButtons[edButtons.length]=new edButton('dyerware_esg','spoiler group','[spoilergroup]','[/spoilergroup]','spoilergroup');
+}
+
+<?php
+            echo '</script>';
+        }        
+    }
+    
 	public function process_group($atts, $content=null, $code="") 
 	{  
 	   	$haveIssue = FALSE;
