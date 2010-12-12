@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Easy Spoiler
-Version: 0.5
+Version: 0.6
 Plugin URI: http://www.dyerware.com/main/products/easy-spoiler
 Description: Creates an attractive container to hide a spoiler within a post or page.  Works in comments and widgets as well.  Also supports clustering spoilers into groups.
 Author: dyerware
@@ -44,6 +44,20 @@ class wpEasySpoiler
 	var $GBL_ANIM = true;
 	var $GBL_EDITORBUTTONS = true;
 	
+	var $GBL_BUTTONSTYLE = "Default";
+	var $GBL_OPENBTNIMAGE = 0;
+	var $GBL_CLOSEBTNIMAGE = 0;
+	
+	var $GBL_CUSTOMCOLORS = false;
+	var $GBL_LINECOLOR = "29180C";
+	var $GBL_TITLECOLOR = "02003D";
+	var $GBL_OUTERBKGCOLOR = "FFD694";
+	var $GBL_INNERBKGCOLOR = "black";
+	var $GBL_INNERTEXTCOLOR = "004F01";
+	var $GBL_BUTTONCOLOR = "FCB69F";
+	var $GBL_BUTTONLINE = "black";
+	var $GBL_BUTTONTEXT = "black";
+	
 	var $op; 
     
 	public function __construct()
@@ -56,9 +70,57 @@ class wpEasySpoiler
 
 	   if (is_admin()) 
 	   {
+	   		add_action('admin_head', array(&$this,'add_admin_files'));
 			add_action('admin_menu', array(&$this, 'add_admin_menu'));
 	   }                    
     }
+
+	function add_admin_files() 
+    {	
+        $plgDir = plugins_url ( plugin_basename ( dirname ( __FILE__ ) ) ); 
+        	
+    	if ( isset( $_GET['page'] ) && $_GET['page'] == 'easy-spoiler/easy-spoiler.php' ) 
+    	{
+    	    echo "<link rel='stylesheet' media='screen' type='text/css' href='" . $plgDir . "/colorpicker/code/colorpicker.css' />\n";
+    		echo "<script type='text/javascript' src='" . $plgDir . "/colorpicker/code/colorpicker.js'></script>\n";
+  
+	
+        $cmt = '// <![CDATA[';
+        $cmte = '// ]]>';
+        echo '
+<script type="text/javascript">
+' . $cmt . '
+	jQuery(document).ready(function($){       		
+        jQuery(".dyerware-color").each(function(index, obj){
+			$(obj).ColorPicker({
+			 	onShow: function (colpkr) {
+              		$(colpkr).fadeIn(200);
+              		return false;
+	            },
+            	onHide: function (colpkr) {
+            		$(colpkr).fadeOut(200);
+            		return false;
+            	},
+            	onChange: function (hsb, hex, rgb) {
+            		jQuery(obj).css("backgroundColor", "#" + hex);
+            		jQuery(obj).css("color", (hsb.b < 50 || (hsb.s > 75 && hsb.b < 75)) ? "#fff" : "#000");
+            		jQuery(obj).val(hex.toUpperCase()); 
+            	},
+        		onSubmit: function(hsb, hex, rgb, el) 
+        		  { jQuery(obj).css("backgroundColor", "#" + hex);
+        		    jQuery(obj).css("color", (hsb.b < 50 || (hsb.s > 75 && hsb.b < 75)) ? "#fff" : "#000");
+        		    jQuery(el).val(hex.toUpperCase()); 
+        		    jQuery(el).ColorPickerHide(); },
+        		onBeforeShow: function () 
+        		  { jQuery(this).ColorPickerSetColor( jQuery(this).attr("value") ); }
+        		});
+		}); 	     	
+	});	
+' . $cmte . '
+</script>';	
+    	}	       	
+    }
+
 
     function CTXID() 
     { 
@@ -79,7 +141,10 @@ class wpEasySpoiler
 	function init_options_map() 
 	{
 		$opnames = array(
-			'DEF_INTRO', 'DEF_TITLE', 'DEF_STYLE', 'GBL_SHOW', 'GBL_HIDE', 'GBL_ANIM', 'GBL_EDITORBUTTONS'
+			'DEF_INTRO', 'DEF_TITLE', 'DEF_STYLE', 'GBL_SHOW', 'GBL_HIDE', 'GBL_ANIM', 'GBL_EDITORBUTTONS',
+			'GBL_BUTTONSTYLE', 'GBL_OPENBTNIMAGE', 'GBL_CLOSEBTNIMAGE', 'GBL_CUSTOMCOLORS', 'GBL_LINECOLOR',
+			'GBL_TITLECOLOR', 'GBL_OUTERBKGCOLOR', 'GBL_INNERBKGCOLOR', 'GBL_BUTTONCOLOR', 'GBL_BUTTONTEXT',
+			'GBL_INNERTEXTCOLOR', 'GBL_BUTTONLINE'
 		);
 		$this->op = (object) array();
 		foreach ($opnames as $name)
@@ -208,6 +273,19 @@ edButtons[edButtons.length]=new edButton('dyerware_esg','spoiler group','[spoile
         $scontent = do_shortcode($content);
         
         
+        if ($this->GBL_CUSTOMCOLORS)
+        {
+        	$gblLineColor = 'border-color:#' . $this->GBL_LINECOLOR . ';';
+        	$gblTitleColor = 'color:#' . $this->GBL_TITLECOLOR . ';';
+        	$gblInnerTextColor = 'color:#' . $this->GBL_INNERTEXTCOLOR . ';';
+        	
+        	$gblButtonTextColor = 'color:#' . $this->GBL_BUTTONTEXT . ';';
+        	$gblButtonBkg = 'background-color:#' . $this->GBL_BUTTONCOLOR . ';background-image:none;';  
+        	      	
+        	$gblOuterBkg = 'background-color:#' . $this->GBL_OUTERBKGCOLOR . ';background-image:none;';
+        	$gblInnerBkg = 'background-color:#' . $this->GBL_INNERBKGCOLOR . ';background-image:none;';
+        }
+        
         $toggleList = "";
         $doAnim = 'false';
         if ($this->GBL_ANIM)
@@ -236,10 +314,10 @@ edButtons[edButtons.length]=new edButton('dyerware_esg','spoiler group','[spoile
 <div style='display:none'>
 {$scontent} 
 </div>    
-<div class='easySpoilerGroupWrapperLast'><div class='easySpoilerConclude'><table class='easySpoilerTable'  border='0' style='text-align:center;' frame='box' align='center' bgcolor='FFFFFF'>
-<tr><th class='easySpoilerEnd' style='width:100%'></th>
-<td class='easySpoilerEnd' style='white-space:nowrap;' colspan='2'></td></tr>             
-<tr><td class='easySpoilerEnd' colspan='2'></td></tr>
+<div class='easySpoilerGroupWrapperLast' style='{$gblLineColor}'><div class='easySpoilerConclude' style='{$gblLineColor};border:0px;'><table class='easySpoilerTable'  border='0' style='text-align:center;' frame='box' align='center' bgcolor='FFFFFF'>
+<tr><th class='easySpoilerEnd' style='width:100%;{$gblOuterBkg}{$gblLineColor}'></th>
+<td class='easySpoilerEnd' style='white-space:nowrap;{$gblOuterBkg}{$gblLineColor}' colspan='2'></td></tr>             
+<tr><td  colspan='2' class='easySpoilerGroupWrapperLastRow' style='{$gblOuterBkg}{$gblLineColor}'></td></tr>
 </table>
 </div>
 <script type='text/javascript'>{$groupScript}</script>
@@ -324,7 +402,21 @@ ecbCode;
                 $scontent = $content;
             }
         }
+        
+        if ($this->GBL_CUSTOMCOLORS)
+        {
+        	$gblLineColor = 'border-color:#' . $this->GBL_LINECOLOR . ';';
+        	$gblTitleColor = 'color:#' . $this->GBL_TITLECOLOR . ';';
+        	$gblInnerTextColor = 'color:#' . $this->GBL_INNERTEXTCOLOR . ';';
+        	
+        	$gblButtonTextColor = 'color:#' . $this->GBL_BUTTONTEXT . ';';
+        	$gblButtonBkg = 'background-color:#' . $this->GBL_BUTTONCOLOR . ';background-image:none;';
+        	$gblButtonLine = 'border-color:#' . $this->GBL_BUTTONLINE . ';';
 
+        	$gblOuterBkg = 'background-color:#' . $this->GBL_OUTERBKGCOLOR . ';background-image:none;';
+        	$gblInnerBkg = 'background-color:#' . $this->GBL_INNERBKGCOLOR . ';background-image:none;';
+        }
+        
         $show = '"' . $this->GBL_SHOW . '"';
         $hide = '"' . $this->GBL_HIDE . '"';
         $doAnim = 'false';
@@ -335,14 +427,26 @@ ecbCode;
 	    $begin = "";
 	    $end = "";
 	    $conclude = "";
-	    $buttonCSS = "'easySpoilerButton'";
+	    
+	    if ($this->GBL_BUTTONSTYLE == "Default")
+	 	{
+	    	$buttonCSS = "'easySpoilerButton'";
+	 	}
+	 	else
+	 	{
+	 		$buttonCSS = "'easySpoilerButtonBare'";
+	 	}
 	    
 	    // Group features vs standalone
 	    if ($this->currentGroup == 0)
 	    {
 	      $titlea = "'easySpoilerTitleA'";
 	      $titleb = "'easySpoilerTitleB'";
-	      $conclude = "<div class='easySpoilerConclude'><table class='easySpoilerTable' border='0' style='text-align:center;' frame='box' align='center' bgcolor='FFFFFF'><tr><th class='easySpoilerEnd' style='width:100%'></th><td class='easySpoilerEnd' style='white-space:nowrap;' colspan='2'></td></tr><tr><td class='easySpoilerEnd' colspan='2'></td></tr></table></div>";
+	      $conclude = "<div class='easySpoilerConclude' style='" .
+	      			   $gblLineColor . "'><table class='easySpoilerTable' border='0' style='text-align:center;' frame='box' align='center' bgcolor='FFFFFF'><tr><th class='easySpoilerEnd' style='width:100%;".
+	      $gblOuterBkg . $gblLineColor . "'></th><td class='easySpoilerEnd' style='white-space:nowrap;" . 
+	      $gblOuterBkg . $gblLineColor . "' colspan='2'></td></tr><tr><td class='easySpoilerGroupWrapperLastRow' colspan='2' style='" .
+	      $gblOuterBkg . $gblLineColor .  "'></td></tr></table></div>";
 	    }
 	    else
 	    {
@@ -358,26 +462,36 @@ ecbCode;
 	       }
 	       else
 	       {
-	           $tableCSS = "'easySpoilerGroupWrapper'";
-	           $titlea = "'easySpoilerGroup'";
-	           $titleb = "'easySpoilerGroup'";
-	           $buttonCSS = "'easySpoilerGroupButton'";
+				$tableCSS = "'easySpoilerGroupWrapper'";
+				$titlea = "'easySpoilerGroup'";
+				$titleb = "'easySpoilerGroup'";
+				
+				if ($this->GBL_BUTTONSTYLE == "Default")
+				{
+					$buttonCSS = "'easySpoilerGroupButton'";
+				}
+				else
+				{
+					$buttonCSS = "'easySpoilerButtonBare'";
+				}
 	       }
 	       
 	       $this->currentGroupSpoiler++;
 	    }
 	    
+	   // <div class={$tableCSS}>
+
         return <<<ecbCode
 {$begin}
-<div class={$tableCSS}>
+<div class={$tableCSS} style='{$gblLineColor}'>
 
-<table class='easySpoilerTable' border='0' style='text-align:center;' align='center' bgcolor='FFFFFF'>
+<table class='easySpoilerTable' border='0' style='text-align:center;' align='center' bgcolor='FFFFFF' >
 
-<tr><th class={$titlea}  style='text-align:left;vertical-align:middle;font-size:120%'>{$spoilertitle}</th>
-<th class={$titleb}  style='text-align:right;vertical-align:middle;font-size:100%'><INPUT type='button' id={$spoilerbutton} class={$buttonCSS} value={$show} onclick={$button} align='right'></th>
+<tr><th class={$titlea}  style='text-align:left;vertical-align:middle;font-size:120%;{$gblOuterBkg}{$gblLineColor}{$gblTitleColor}'>{$spoilertitle}</th>
+<th class={$titleb}  style='text-align:right;vertical-align:middle;font-size:100%;{$gblOuterBkg}{$gblLineColor}'><input type='button' id={$spoilerbutton} class={$buttonCSS} value={$show} onclick={$button} align='right' style='{$gblButtonTextColor}{$gblButtonBkg}{$gblButtonLine}'/></th>
 </tr>
 
-<tr><td class='easySpoilerRow' colspan='2'><div><div id={$rowDiv} class='easySpoilerSpoils' style='display:none; white-space:wrap; vertical-align:middle;'>
+<tr><td class='easySpoilerRow' colspan='2' style='{$gblLineColor}'><div><div id='{$rowDiv}' class='easySpoilerSpoils' style='display:none; white-space:wrap; vertical-align:middle;{$gblInnerBkg}${gblInnerTextColor}{$gblLineColor}'>
 {$scontent}
 </div></div></td></tr>
 </table>
@@ -390,7 +504,8 @@ ecbCode;
    
    // This is for support within comments:  NO expansion of shortcodes
    // within spoiler as users could invoke any shortcode you have installed.
-   public function do_shortcode_in_comment($content) {
+   public function do_shortcode_in_comment($content) 
+   {
     	global $shortcode_tags;
     
     	if (empty($shortcode_tags) || !is_array($shortcode_tags))
@@ -404,13 +519,52 @@ ecbCode;
        
    // This is for support in widgets: Will do full expansion of any shortcode
    // within spoiler.
-   public function do_shortcode($content) {
+   public function do_shortcode($content) 
+   {
     	global $shortcode_tags;
     
     	if (empty($shortcode_tags) || !is_array($shortcode_tags))
     		return $content;
     	$pattern = '(.?)\[(spoiler)\b(.*?)(?:(\/))?\](?:(.+?)\[\/\2\])?(.?)';
     	return preg_replace_callback('/'.$pattern.'/s', 'do_shortcode_tag', $content);
+    }
+    
+   
+   
+   function RGBtoHSB ($rgb)
+   {
+        sscanf ($rgb, "%02x%02x%02x", $r, $g, $b);
+     
+        $h = 0;
+        $s = 0;
+        
+        $min = min($r, $g, $b);
+        $max = max($r, $g, $b);
+        $delta = $max - $min;
+        $b = $max;
+        if ($max != 0) {
+        	
+        }
+        $s = $max != 0 ? 255 * $delta / $max : 0;
+        if ($s != 0) {
+        	if ($r == $max) {
+        		$h = ($g - $b) / $delta;
+        	} else if ($g == $max) {
+        		$h = 2 + ($b - $r) / $delta;
+        	} else {
+        		$h = 4 + ($r - $g) / $delta;
+        	}
+        } else {
+        	$h = -1;
+        }
+        $h *= 60;
+        if ($h < 0) {
+        	$h += 360;
+        }
+        $s *= 100/255;
+        $b *= 100/255;
+ 
+        return array($h, $s, $b);
     }
 }  
 

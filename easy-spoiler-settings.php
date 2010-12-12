@@ -54,7 +54,94 @@ $sections = array(
 				'style' => 'max-width: 5em',
 				'text' => 'Add helper buttons to HTML editor',
 				'help' => 'If checked, buttons for inserting a spoiler or spoilter group are added to your editor.  Select the HTML you want hidden and click on spoiler.  Select the spoilers you want grouped and click on spoilergroup.'),
-		)),				
+		)),		
+	
+	
+		
+	(object) array(
+		'title' => 'Colors',
+		'help' => 'These settings change color defaults.',
+		'options' => array(
+		
+		
+		
+			(object) array(
+				'title' => 'Use Custom Colors',
+				'key' => 'GBL_CUSTOMCOLORS', 
+				'style' => 'max-width: 5em',
+				'text' => 'Use the colors specified below.  Otherwise, the CSS file is used.',
+				'help' => 'The CSS file and your theme defaults provide the default behavior, however if your theme is causing issues or you wish finer control, enable this checkbox and use the settings below.' ),	
+
+			(object) array(
+				'title' => 'Outer Background Color',
+				'key' => 'GBL_OUTERBKGCOLOR',
+				'class' => 'dyerware-color',
+				'help' => 'HTML Color code for the spoiler outer area background color.' ),
+				
+			(object) array(
+				'title' => 'Reveal Background Color',
+				'key' => 'GBL_INNERBKGCOLOR',
+				'class' => 'dyerware-color',
+				'help' => 'HTML Color code for the spoiler reveal background color.' ),
+			
+			(object) array(
+				'title' => 'Button Outline Color',
+				'key' => 'GBL_BUTTONLINE', 
+				'class' => 'dyerware-color',
+				'help' => 'HTML Color code for the button border.' ),
+					
+			(object) array(
+				'title' => 'Button Background Color',
+				'key' => 'GBL_BUTTONCOLOR', 
+				'class' => 'dyerware-color',
+				'help' => 'HTML Color code for the button background.' ),
+			
+			(object) array(
+				'title' => 'Button Text Color',
+				'key' => 'GBL_BUTTONTEXT', 
+				'class' => 'dyerware-color',
+				'help' => 'HTML Color code for the button text.' ),
+					
+			(object) array(
+				'title' => 'Line Color',
+				'key' => 'GBL_LINECOLOR', 
+				'class' => 'dyerware-color',
+				'help' => 'HTML Color code for the outlines of the spoiler.' ),
+		
+			(object) array(
+				'title' => 'Title Text Color',
+				'key' => 'GBL_TITLECOLOR', 
+				'class' => 'dyerware-color',
+				'help' => 'HTML Color code for the spoiler title text.' ),
+				
+			(object) array(
+				'title' => 'Spoiler Text Color',
+				'key' => 'GBL_INNERTEXTCOLOR', 
+				'class' => 'dyerware-color',
+				'help' => 'HTML Color code for the spoiler text.' ),
+		)),
+		
+		(object) array(
+		'title' => 'Button Styling',
+		'help' => 'These settings change the button styling defaults (for button colors, see the previous section).',
+		'options' => array(					
+			(object) array(
+				'title' => 'Button Style',
+				'key' => 'GBL_BUTTONSTYLE',
+				'pick' => (object)array("Default","No Styling"),
+				'help' => 'The default button type rendered by the plugin.  Use No Styling to have it render natively.'),
+			
+			/*
+			(object) array(
+				'title' => 'Image for the Show button',
+				'key' => 'GBL_OPENBTNIMAGE',
+				'help' => 'URL of an image for the Show button.' ),
+			(object) array(
+				'title' => 'Image for the Hide button',
+				'key' => 'GBL_CLOSEBTNIMAGE', 
+				'help' => 'URL of an image for the Hide button' ),		
+			*/		
+		)),			
 	);
 
 ?>
@@ -83,6 +170,8 @@ dd .caveat { font-weight: bold; color: #C00; text-align: center }
 <div class="wrap">
 <div id="icon-options-general" class="icon32"><br /></div>
 <h2>Easy Spoiler by dyerware</h2>
+
+<p><a href="http://itunes.apple.com/us/app/feedhopper-rss-reader/id361881998?mt=8"><img border="0" src="http://www.dyerware.com/images/624x58-Ad.jpg" height="50"></a></p>
 
 <?php
 include 'dyerware-adm.php';
@@ -124,19 +213,51 @@ $helpicon = 'http://www.dyerware.com/images/inspector.png';
 <?php foreach ($s->options as $o) :
 	$key = $o->key;
 	$v = $options->$key; $t = gettype($v);
-
-	$type = ' type="' . (is_bool($v) ? 'checkbox' : 'text') . '"';
-	$style = $o->style ? " style=\"$o->style\"" : 'style="width:100%"';
-	$value = is_bool($v) ? ($v ? ' checked="checked"' : '') : ' value="'.$v.'"';
 	$name = ' name="'.$key.'"';
-	$attr = $type . $style . $name . $value;
-	unset($type, $style, $name, $value);
+	$class = $o->class ? " class=\"$o->class\"" : "";
+	
+	$style = $o->style ? " style=\"$o->style;" : 'style="width:100%;';
+	
+	if ($o->class == 'dyerware-color')
+	{
+	   $style .= " background-color:#" . $v . ";"; 
+	   $hsb = $this->RGBtoHSB($v);
+	   
+	   if ($hsb[2] < 50 || ($hsb[1] > 75 && $hsb[2] < 75))
+	   {
+	       $style .= " color:#FFF;";
+	   }
+	   else
+	   {
+	       $style .= " color:#000;";
+	   }
+	}	
+	$style .= '"';
+
+	
+	if ($o->pick)
+	{ 
+          $attr = '<select ' . $name . '>';
+          foreach ($o->pick as $item)
+    	  {	
+    	   $attr .= '<option value="' . $item .  '" ' . (($item == $v)?'SELECTED ':'') . $style .'>' . $item . '</option>';
+    	  }
+    	  $attr .= "</select>";  
+	}
+	else
+	{
+    	$type = ' type="' . (is_bool($v) ? 'checkbox' : 'text') . '" ';
+    	$value = is_bool($v) ? ($v ? ' checked="checked"' : '') : ' value="'.$v.'"';
+    	$attr = '<input ' . $type . $style . $class . $name . $value . '/>';
+	}
+ 	
+	
 	$text = $o->text ? " <span>$o->text</span>" : '';
 ?>
 		<tr>
 			<th scope="row"><?php echo $o->title ?></th>
 			<td>
-				<div style="vertical-align:bottom"><input<?php echo $attr ?> /><?php echo $text ?></div>
+				<div style="vertical-align:bottom"><?php echo $attr ?><?php echo $text ?></div>
 				<div><em><?php echo $o->help ?></em></div>
 			</td>
 		</tr>
