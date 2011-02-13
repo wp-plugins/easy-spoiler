@@ -169,7 +169,8 @@ border-bottom-right-radius: 0px;
 -khtml-border-bottom-left-radius: 0px;
 -khtml-border-bottom-right-radius: 0px;  
 margin:0px 0px;
-padding:5px;   
+padding:5px;
+border:0px;
 border-bottom: 1px solid #ddd;	
 background: url(images/shadetop.gif) left top;
 }
@@ -194,6 +195,7 @@ border-bottom-right-radius: 0px;
 -khtml-border-bottom-right-radius: 0px;  
 margin:0px 0px;
 padding:5px;   
+border:0px;
 border-bottom: 1px solid #ddd;	
 background: url(images/shadetop.gif) left top;
 }
@@ -217,7 +219,8 @@ border-bottom-right-radius: 0px;
 -khtml-border-bottom-left-radius: 0px;
 -khtml-border-bottom-right-radius: 0px;  
 margin:0px 0px;
-padding:5px;   
+padding:5px;
+border:0px;
 border-bottom: 1px solid #ddd;	
 background: url(images/shadetop.gif) left top;
 }
@@ -266,6 +269,6 @@ border-collapse:collapse; border-spacing:0px; border-style:dashed;
 margin-left:auto; margin-right:auto;text-align:justify;}
 
 .easySpoilerEnd
-{margin:1px 0px;padding:5px;border:0;outline:5px;font-size:100%;vertical-align:middle;
+{margin:1px 0px;padding:0px;border:0;outline:5px;font-size:100%;vertical-align:middle;
 border-collapse:collapse; border-spacing:1px; border-color:#AAAAAA; border-style:solid;
 margin-left:auto; margin-right:auto;text-align:justify;}

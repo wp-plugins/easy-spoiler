@@ -4,8 +4,8 @@ Contributors: dyerware
 Donate link: http://www.dyerware.com/main/products/easy-spoiler/easy-spoiler-plugin-for-wordpress.html
 Tags: spoiler,hint,tip,answer,hidden,hide,mobile,shortcode,dyerware
 Requires at least: 2.8
-Tested up to: 3.0.3
-Stable tag: 0.6
+Tested up to: 3.0.5
+Stable tag: 0.7
 
 This plugin allows you to create a container for spoilers within pages, posts, comments, and widgets.  Also supports spoiler groups.
 
@@ -65,6 +65,9 @@ For an up-to-date FAQ, please visit:
 4. A spoiler group
 
 == Upgrade Notice ==
+
+= 0.7 =
+ * Some CSS tweaks to help with more aggressive themes
 
 = 0.6 =
  * Added new theme color helpers in admin menu.  Easy configuration of several color attributes.
