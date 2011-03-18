@@ -13,7 +13,7 @@ $helplinks = array(
 		'icon' => "http://www.dyerware.com/images/help.png" ),
 	array(
 		'text' => 'Forum',
-		'url' => "http://www.dyerware.com/main/forum/easy-spoiler",
+		'url' => "http://www.dyerware.com/forum",
 		'icon' => "http://www.dyerware.com/images/pencil.png" ),		
 	array(
 		'text' => 'Rate',

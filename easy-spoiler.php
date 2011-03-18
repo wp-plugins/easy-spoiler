@@ -1,13 +1,13 @@
 <?php
 /*
 Plugin Name: Easy Spoiler
-Version: 0.7
+Version: 1.0
 Plugin URI: http://www.dyerware.com/main/products/easy-spoiler
 Description: Creates an attractive container to hide a spoiler within a post or page.  Works in comments and widgets as well.  Also supports clustering spoilers into groups.
 Author: dyerware
 Author URI: http://www.dyerware.com
 */
-/*  Copyright © 2009, 2010  dyerware
+/*  Copyright © 2009, 2010, 2011  dyerware
     Support: support@dyerware.com
 
     This program is free software; you can redistribute it and/or modify
@@ -27,6 +27,13 @@ Author URI: http://www.dyerware.com
 /*
     Admin panel code lifted (and expanded upon) from Hackadelic TOC plugin.  GREAT design.
 */  
+
+
+
+/*
+fix title text in admin
+*/
+
 class wpEasySpoiler
 {
     private $spoilerNum = 0;
@@ -58,12 +65,17 @@ class wpEasySpoiler
 	var $GBL_BUTTONLINE = "black";
 	var $GBL_BUTTONTEXT = "black";
 	
+	var $GBL_TITLEBARBUTTON = false;
+	var $GBL_REFRESHIFRAMES = false;
+	var $GBL_ANIMATIONSPEED = 'fast';
+	
+	
 	var $op; 
     
 	public function __construct()
     { 
        $jsDir = get_option('siteurl') . '/wp-content/plugins/easy-spoiler/js/';
-       wp_register_script('wpEasySpoilerJS', "{$jsDir}easy-spoiler.js", false, '0.3'); 
+       wp_register_script('wpEasySpoilerJS', "{$jsDir}easy-spoiler.js", false, '0.7'); 
        
        $this->init_options_map();
        $this->load_options();
@@ -72,7 +84,11 @@ class wpEasySpoiler
 	   {
 	   		add_action('admin_head', array(&$this,'add_admin_files'));
 			add_action('admin_menu', array(&$this, 'add_admin_menu'));
-	   }                    
+	   }       
+	   
+	   if (strpos($_SERVER['REQUEST_URI'], 'post.php') || strpos($_SERVER['REQUEST_URI'], 'post-new.php') || strpos($_SERVER['REQUEST_URI'], 'page-new.php') || strpos($_SERVER['REQUEST_URI'], 'page.php') || strpos($_SERVER['REQUEST_URI'], 'comment.php')) {
+			add_action('admin_footer', array(&$this, 'init_html_editor_tags'));
+		}               
     }
 
 	function add_admin_files() 
@@ -144,7 +160,7 @@ class wpEasySpoiler
 			'DEF_INTRO', 'DEF_TITLE', 'DEF_STYLE', 'GBL_SHOW', 'GBL_HIDE', 'GBL_ANIM', 'GBL_EDITORBUTTONS',
 			'GBL_BUTTONSTYLE', 'GBL_OPENBTNIMAGE', 'GBL_CLOSEBTNIMAGE', 'GBL_CUSTOMCOLORS', 'GBL_LINECOLOR',
 			'GBL_TITLECOLOR', 'GBL_OUTERBKGCOLOR', 'GBL_INNERBKGCOLOR', 'GBL_BUTTONCOLOR', 'GBL_BUTTONTEXT',
-			'GBL_INNERTEXTCOLOR', 'GBL_BUTTONLINE'
+			'GBL_INNERTEXTCOLOR', 'GBL_BUTTONLINE', 'GBL_REFRESHIFRAMES', 'GBL_ANIMATIONSPEED', 'GBL_TITLEBARBUTTON',
 		);
 		$this->op = (object) array();
 		foreach ($opnames as $name)
@@ -217,8 +233,6 @@ class wpEasySpoiler
     {
        wp_enqueue_script('jquery');   
        wp_enqueue_script('wpEasySpoilerJS');  
-       
-       $this->init_html_editor_tags(); 
     }   
 
     function init_html_editor_tags()
@@ -228,12 +242,41 @@ class wpEasySpoiler
         {    
             echo '<script type="text/javascript">';
 ?>
-if(typeof edButtons!="undefined")
+if (gac_edbar=document.getElementById("ed_toolbar") ) 
 {
-edButtons[edButtons.length]=new edButton('dyerware_es','spoiler','[spoiler]','[/spoiler]','spoiler');
-edButtons[edButtons.length]=new edButton('dyerware_esg','spoiler group','[spoilergroup]','[/spoilergroup]','spoilergroup');
+	if(typeof edButtons!="undefined")
+	{
+		var gac_Nr, gac_But, gac_But;
+		gac_Nr = edButtons.length;
+		edButtons[gac_Nr] = new edButton("ed_"+gac_Nr, "Spoilers", "[spoiler]", "[/spoiler]", "");
+		gac_But = gac_edbar.lastChild;
+		while (gac_But.nodeType != 1) {
+			gac_But = gac_But.previousSibling;
+		}
+		gac_But = gac_But.cloneNode(true);
+		gac_But.id = "ed_"+gac_Nr;
+		gac_But._idx = gac_Nr;
+		gac_But.value = "Spoiler";
+		gac_But.title = "Spoiler";
+		gac_But.onclick = function() {edInsertTag(edCanvas, this._idx); return false; }
+		gac_edbar.appendChild(gac_But);
+		
+		
+		gac_Nr = edButtons.length;
+		edButtons[gac_Nr] = new edButton("ed_"+gac_Nr, "Spoiler Group", "[spoilergroup]", "[/spoilergroup]", "");
+		gac_But = gac_edbar.lastChild;
+		while (gac_But.nodeType != 1) {
+			gac_But = gac_But.previousSibling;
+		}
+		gac_But = gac_But.cloneNode(true);
+		gac_But.id = "ed_"+gac_Nr;
+		gac_But._idx = gac_Nr;
+		gac_But.value = "Spoiler Group";
+		gac_But.title = "Spoiler Group";
+		gac_But.onclick = function() {edInsertTag(edCanvas, this._idx); return false; }
+		gac_edbar.appendChild(gac_But);
+	}
 }
-
 <?php
             echo '</script>';
         }        
@@ -287,13 +330,16 @@ edButtons[edButtons.length]=new edButton('dyerware_esg','spoiler group','[spoile
         }
         
         $toggleList = "";
+        $iframe = 'false';
+        if ($this->GBL_REFRESHIFRAMES)
+        	$iframe = 'true';
         $doAnim = 'false';
         if ($this->GBL_ANIM)
             $doAnim = 'true';
         
         foreach ($this->spoilerArray as $entry)
     	{
-    	   $toggleList = $toggleList . "wpSpoilerHide('".$entry."'," . $doAnim . ",'".$this->GBL_SHOW. "');";
+    	   $toggleList = $toggleList . "wpSpoilerHide('".$entry."'," . $doAnim . ",'".$this->GBL_SHOW. "','" . $this->GBL_ANIMATIONSPEED ."');";
     	}
     	                           
         // Custom group action that ensures only ONE spoiler is opened at once.
@@ -301,9 +347,9 @@ edButtons[edButtons.length]=new edButton('dyerware_esg','spoiler group','[spoile
                            "var myName = id + '_action';" .
                            "var e = document.getElementById(id);".
                            "if(e.style.display == 'block')".
-                           "{wpSpoilerToggle(id," . $doAnim. ",'" . $this->GBL_SHOW . "','" .$this->GBL_HIDE. "');}".
+                           "{wpSpoilerToggle(id," . $doAnim. ",'" . $this->GBL_SHOW . "','" .$this->GBL_HIDE. "','" . $this->GBL_ANIMATIONSPEED . "','" . $iframe . "');}".
                            "else".
-                           "{" . $toggleList . "wpSpoilerToggle(id," .$doAnim.  ",'" .$this->GBL_SHOW."','" .$this->GBL_HIDE. "');}".
+                           "{" . $toggleList . "wpSpoilerToggle(id," .$doAnim.  ",'" .$this->GBL_SHOW."','" .$this->GBL_HIDE. "','" . $this->GBL_ANIMATIONSPEED . "','" . $iframe ."');}".
                         "}";
                         
                                 
@@ -417,13 +463,28 @@ ecbCode;
         	$gblInnerBkg = 'background-color:#' . $this->GBL_INNERBKGCOLOR . ';background-image:none;';
         }
         
+        // some parameters
         $show = '"' . $this->GBL_SHOW . '"';
         $hide = '"' . $this->GBL_HIDE . '"';
+        $speed = '"' . $this->GBL_ANIMATIONSPEED . '"';
+        $iframe = 'false';
+        if ($this->GBL_REFRESHIFRAMES)
+        	$iframe = 'true';
         $doAnim = 'false';
         if ($this->GBL_ANIM)
             $doAnim = 'true';
             
-        $button = "'wpSpoilerToggle(" . $rowDiv2 . "," .$doAnim. "," .$show. "," .$hide. ");'";
+        $doButtons = "";
+        $titleAction = "";
+        $buttonAction = "onclick='wpSpoilerToggle(" . $rowDiv2 . "," .$doAnim. "," .$show. "," .$hide. "," .$speed. "," .$iframe. ");'";
+        
+        if ($this->GBL_TITLEBARBUTTON)
+        {
+        	$doButtons = "display:none;";
+        	$titleAction = $buttonAction . " onselectstart='return false;'";
+        	$buttonAction = "";
+        }
+        
 	    $begin = "";
 	    $end = "";
 	    $conclude = "";
@@ -451,7 +512,14 @@ ecbCode;
 	    else
 	    {
 	       array_push($this->spoilerArray, $rowDiv);
-	       $button = "'wpSpoilerGroupToggle_" . $this->currentGroup . "(". $rowDiv2 .");'";
+	       $buttonAction = "onclick='wpSpoilerGroupToggle_" . $this->currentGroup . "(". $rowDiv2 .");'";
+	       if ($this->GBL_TITLEBARBUTTON)
+	       {
+	        	$doButtons = "display:none;";
+	        	$titleAction = $buttonAction . " onselectstart='return false;'";
+	        	$buttonAction = "";
+	       }
+        
 	       $begin = "</div>";
 	       $end = "<div style='display:none'>";
 	       if ($this->currentGroupSpoiler == 0)
@@ -487,8 +555,8 @@ ecbCode;
 
 <table class='easySpoilerTable' border='0' style='text-align:center;' align='center' bgcolor='FFFFFF' >
 
-<tr><th class={$titlea}  style='text-align:left;vertical-align:middle;font-size:120%;{$gblOuterBkg}{$gblLineColor}{$gblTitleColor}'>{$spoilertitle}</th>
-<th class={$titleb}  style='text-align:right;vertical-align:middle;font-size:100%;{$gblOuterBkg}{$gblLineColor}'><input type='button' id={$spoilerbutton} class={$buttonCSS} value={$show} onclick={$button} align='right' style='{$gblButtonTextColor}{$gblButtonBkg}{$gblButtonLine}'/></th>
+<tr><th class={$titlea}  style='text-align:left;vertical-align:middle;font-size:120%;{$gblOuterBkg}{$gblLineColor}{$gblTitleColor}' {$titleAction}>{$spoilertitle}</th>
+<th class={$titleb}  style='text-align:right;vertical-align:middle;font-size:100%;{$gblOuterBkg}{$gblLineColor}' {$titleAction}><input type='button' id={$spoilerbutton} class={$buttonCSS} value={$show} {$buttonAction} align='right' style='{$gblButtonTextColor}{$gblButtonBkg}{$gblButtonLine}${doButtons}'/></th>
 </tr>
 
 <tr><td class='easySpoilerRow' colspan='2' style='{$gblLineColor}'><div><div id='{$rowDiv}' class='easySpoilerSpoils' style='display:none; white-space:wrap; vertical-align:middle;{$gblInnerBkg}${gblInnerTextColor}{$gblLineColor}'>
