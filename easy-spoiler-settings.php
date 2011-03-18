@@ -29,11 +29,11 @@ $sections = array(
 		'help' => 'These settings change all spoilers.',
 		'options' => array(
 			(object) array(
-				'title' => 'Show button',
+				'title' => 'Show button Text',
 				'key' => 'GBL_SHOW',
 				'help' => 'Text for the show button' ),
 			(object) array(
-				'title' => 'Hide button',
+				'title' => 'Hide button Text',
 				'key' => 'GBL_HIDE', 
 				'help' => 'Text for the hide button' ),
 			(object) array(
@@ -41,9 +41,25 @@ $sections = array(
 				'key' => 'GBL_ANIM',
 				'style' => 'max-width: 5em',
 				'text' => 'Do Animations',
-				'help' => 'You can turn off animations that use the jQuery library if you suspect a plugin conflict, or if you want faster open/close action.' ),				
-		)),	
-		
+				'help' => 'You can turn off animations that use the jQuery library if you suspect a plugin conflict, or if you want faster open/close action.' ),		
+			(object) array(
+				'title' => 'Animation Speed',
+				'key' => 'GBL_ANIMATIONSPEED',
+				'pick' => (object)array("fast","slow"),
+				'help' => 'Speed of the spoiler open/close animations.'	),	
+			(object) array(
+				'title' => 'Use Titlebar As Button',
+				'key' => 'GBL_TITLEBARBUTTON', 
+				'style' => 'max-width: 5em',
+				'text' => 'Do not render buttons and instead user clicks on spoiler title',				
+				'help' => 'If checked, a user will click on the title to open and close the spoiler.' ),	
+			(object) array(
+				'title' => 'Refresh IFrames',
+				'key' => 'GBL_REFRESHIFRAMES', 
+				'style' => 'max-width: 5em',
+				'text' => 'Scan for and refresh IFrames internal to a spoiler when opened.',				
+				'help' => 'Some browsers do not refresh iframes correctly when going from hidden to seen.  This will atempt to force a refresh of the iframes contained within a spoiler upon opening it.' ),	
+		)),
 	(object) array(
 		'title' => 'Editor Settings',
 		'help' => 'Choose options related to your blog editor.',
@@ -130,7 +146,7 @@ $sections = array(
 				'key' => 'GBL_BUTTONSTYLE',
 				'pick' => (object)array("Default","No Styling"),
 				'help' => 'The default button type rendered by the plugin.  Use No Styling to have it render natively.'),
-			
+	
 			/*
 			(object) array(
 				'title' => 'Image for the Show button',
@@ -233,7 +249,6 @@ $helpicon = 'http://www.dyerware.com/images/inspector.png';
 	   }
 	}	
 	$style .= '"';
-
 	
 	if ($o->pick)
 	{ 
@@ -251,7 +266,7 @@ $helpicon = 'http://www.dyerware.com/images/inspector.png';
     	$attr = '<input ' . $type . $style . $class . $name . $value . '/>';
 	}
  	
-	
+	unset($type, $style, $name, $value, $class);
 	$text = $o->text ? " <span>$o->text</span>" : '';
 ?>
 		<tr>

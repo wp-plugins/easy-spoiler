@@ -1,15 +1,15 @@
 /**
  * Handle: easySpoiler
- * Version: 0.3
+ * Version: 0.7
  * Enqueue: true
  *
  * Author: dyerware
  * Author URI: http://www.dyerware.com
- * Copyright © 2009, 2010  dyerware
+ * Copyright © 2009, 2010, 2011  dyerware
  * Support: support@dyerware.com
  */
  
-function wpSpoilerToggle(id, doAnim, showName, hideName) 
+function wpSpoilerToggle(id, doAnim, showName, hideName, speed, doIframes) 
 {
     var myName = id + '_action';
     var me = document.getElementById(myName);
@@ -18,7 +18,7 @@ function wpSpoilerToggle(id, doAnim, showName, hideName)
     if(e.style.display == 'block')
     {
         if (doAnim)
-            {jQuery("#" + id).slideUp('fast');}
+            {jQuery("#" + id).slideUp(speed);}
         else
             {e.style.display = 'none';}
         me.value=showName;
@@ -26,13 +26,16 @@ function wpSpoilerToggle(id, doAnim, showName, hideName)
     else
     {     
         if (doAnim)
-            {jQuery("#" + id).fadeIn('fast');} 
+            {jQuery("#" + id).fadeIn(speed);} 
         e.style.display = 'block';
         me.value=hideName;
+        
+        if (doIframes)
+        	{jQuery("#" + id).find('iframe').each(function (i) {this.src = this.src;});}
     }
 }
 
-function wpSpoilerHide(id, doAnim, showName) 
+function wpSpoilerHide(id, doAnim, showName, speed) 
 {
     var myName = id + '_action';
     var me = document.getElementById(myName);
@@ -41,7 +44,7 @@ function wpSpoilerHide(id, doAnim, showName)
     if(e.style.display == 'block')
     {   
         if (doAnim)
-            {jQuery("#" + id).slideUp('fast');}
+            {jQuery("#" + id).slideUp(speed);}
         e.style.display = 'none';
         me.value=showName;
     }

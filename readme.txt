@@ -4,8 +4,8 @@ Contributors: dyerware
 Donate link: http://www.dyerware.com/main/products/easy-spoiler/easy-spoiler-plugin-for-wordpress.html
 Tags: spoiler,hint,tip,answer,hidden,hide,mobile,shortcode,dyerware
 Requires at least: 2.8
-Tested up to: 3.0.5
-Stable tag: 0.7
+Tested up to: 3.1
+Stable tag: 1.0
 
 This plugin allows you to create a container for spoilers within pages, posts, comments, and widgets.  Also supports spoiler groups.
 
@@ -33,6 +33,8 @@ The shortcode format is:
 **[spoiler title="Secret location of the code"]It's in the dresser[/spoiler]**
 
 For a complete example and more detailed documentation, visit the plugin home page.  If you do not understand these instructions, please ask questions in the comments section on the plugin home page.  We will be more than happy to answer them.
+
+There are a lot of options including colors, controls, and animation behavior.
 
 Go here for up-to-date usage and examples:
 [EasySpoiler Tutorial](http://www.dyerware.com/main/products/easy-spoiler/easy-spoiler-plugin-for-wordpress.html "EasySpoiler Tutorial")
@@ -66,6 +68,12 @@ For an up-to-date FAQ, please visit:
 
 == Upgrade Notice ==
 
+= 1.0 =
+ * You can now configure the titlebar to be the open/close button.
+ * The speed of the spoiler open/close animations can now be customized.
+ * New option to force-refresh iframes if they are within a spoiler and you have issues with them.
+ * Editor button fixes for WP3.1
+
 = 0.7 =
  * Some CSS tweaks to help with more aggressive themes
 
@@ -97,6 +105,15 @@ For an up-to-date FAQ, please visit:
 
 == Changelog ==
 
+= 1.0 =
+ * You can now configure the titlebar to be the open/close button.
+ * The speed of the spoiler open/close animations can now be customized.
+ * New option to force-refresh iframes if they are within a spoiler and you have issues with them.
+ * Editor button fixes for WP3.1
+
+= 0.7 =
+ * Some CSS tweaks to help with more aggressive themes
+
 = 0.6 =
  * Added new theme color helpers in admin menu.  Easy configuration of several color attributes.
  * W3C HTML validation of the generated output.
@@ -117,13 +134,10 @@ For an up-to-date FAQ, please visit:
  * Animations during open/close.  You can turn them off if desired.
 
 = 0.3 =
-
  * With the new optional spoilergroup tag you can enclose multiple spoiler tags together.  Easy Spoiler will visually group them and auto-close any related spoiler when the user opens another from the same group.
 
 = 0.2.1 =
-
  * Can be inserted within comments, and within widgets.  Comment insertion prevents embedded shortcode expansion (i.e. if the spoiler itself contains other shortcodes, they will not be expanded) for security concerns.
 
 = 0.1 =
-
  * First public release
