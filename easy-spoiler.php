@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Easy Spoiler
-Version: 1.0
+Version: 1.1
 Plugin URI: http://www.dyerware.com/main/products/easy-spoiler
 Description: Creates an attractive container to hide a spoiler within a post or page.  Works in comments and widgets as well.  Also supports clustering spoilers into groups.
 Author: dyerware
@@ -48,6 +48,7 @@ class wpEasySpoiler
 	var $DEF_STYLE = 'easySpoilerWrapper';
 	var $GBL_SHOW = 'Show';
 	var $GBL_HIDE = 'Hide';
+	var $GBL_SELECT = 'Select';
 	var $GBL_ANIM = true;
 	var $GBL_EDITORBUTTONS = true;
 	
@@ -68,6 +69,7 @@ class wpEasySpoiler
 	var $GBL_TITLEBARBUTTON = false;
 	var $GBL_REFRESHIFRAMES = false;
 	var $GBL_ANIMATIONSPEED = 'fast';
+	var $GBL_SHOWSELECT     = true;
 	
 	
 	var $op; 
@@ -75,7 +77,7 @@ class wpEasySpoiler
 	public function __construct()
     { 
        $jsDir = get_option('siteurl') . '/wp-content/plugins/easy-spoiler/js/';
-       wp_register_script('wpEasySpoilerJS', "{$jsDir}easy-spoiler.js", false, '0.7'); 
+       wp_register_script('wpEasySpoilerJS', "{$jsDir}easy-spoiler.js", false, '1.0'); 
        
        $this->init_options_map();
        $this->load_options();
@@ -160,7 +162,8 @@ class wpEasySpoiler
 			'DEF_INTRO', 'DEF_TITLE', 'DEF_STYLE', 'GBL_SHOW', 'GBL_HIDE', 'GBL_ANIM', 'GBL_EDITORBUTTONS',
 			'GBL_BUTTONSTYLE', 'GBL_OPENBTNIMAGE', 'GBL_CLOSEBTNIMAGE', 'GBL_CUSTOMCOLORS', 'GBL_LINECOLOR',
 			'GBL_TITLECOLOR', 'GBL_OUTERBKGCOLOR', 'GBL_INNERBKGCOLOR', 'GBL_BUTTONCOLOR', 'GBL_BUTTONTEXT',
-			'GBL_INNERTEXTCOLOR', 'GBL_BUTTONLINE', 'GBL_REFRESHIFRAMES', 'GBL_ANIMATIONSPEED', 'GBL_TITLEBARBUTTON',
+			'GBL_INNERTEXTCOLOR', 'GBL_BUTTONLINE', 'GBL_REFRESHIFRAMES', 'GBL_ANIMATIONSPEED', 'GBL_TITLEBARBUTTON', 
+			'GBL_SHOWSELECT', 'GBL_SELECT',
 		);
 		$this->op = (object) array();
 		foreach ($opnames as $name)
@@ -357,7 +360,7 @@ if (gac_edbar=document.getElementById("ed_toolbar") )
         $this->currentGroupSpoiler = 0;
       
         return <<<ecbCode
-<div style='display:none'>
+<div style='display:none; white-space:wrap; overflow:auto;'>
 {$scontent} 
 </div>    
 <div class='easySpoilerGroupWrapperLast' style='{$gblLineColor}'><div class='easySpoilerConclude' style='{$gblLineColor};border:0px;'><table class='easySpoilerTable'  border='0' style='text-align:center;' frame='box' align='center' bgcolor='FFFFFF'>
@@ -474,15 +477,17 @@ ecbCode;
         if ($this->GBL_ANIM)
             $doAnim = 'true';
             
-        $doButtons = "";
+        $doShowButtons = "";
+        $doSelButtons = "";
         $titleAction = "";
-        $buttonAction = "onclick='wpSpoilerToggle(" . $rowDiv2 . "," .$doAnim. "," .$show. "," .$hide. "," .$speed. "," .$iframe. ");'";
+        $buttonAction = "onclick='wpSpoilerToggle(" . $rowDiv2 . "," .$doAnim. "," .$show. "," .$hide. "," .$speed. "," .$iframe. "); return false;'";
         
         if ($this->GBL_TITLEBARBUTTON)
         {
-        	$doButtons = "display:none;";
+        	$doShowButtons = "display:none;";
         	$titleAction = $buttonAction . " onselectstart='return false;'";
         	$buttonAction = "";
+        	$spoilertitle = "<a href='' " . $titleAction . ">" . $spoilertitle . "</a>";
         }
         
 	    $begin = "";
@@ -512,12 +517,13 @@ ecbCode;
 	    else
 	    {
 	       array_push($this->spoilerArray, $rowDiv);
-	       $buttonAction = "onclick='wpSpoilerGroupToggle_" . $this->currentGroup . "(". $rowDiv2 .");'";
+	       $buttonAction = "onclick='wpSpoilerGroupToggle_" . $this->currentGroup . "(". $rowDiv2 ."); return false;'";
 	       if ($this->GBL_TITLEBARBUTTON)
 	       {
-	        	$doButtons = "display:none;";
+	        	$doShowButtons = "display:none;";
 	        	$titleAction = $buttonAction . " onselectstart='return false;'";
 	        	$buttonAction = "";
+	        	$spoilertitle = "<a href='' " . $titleAction . ">" . $spoilertitle . "</a>";
 	       }
         
 	       $begin = "</div>";
@@ -547,21 +553,34 @@ ecbCode;
 	       $this->currentGroupSpoiler++;
 	    }
 	    
-	   // <div class={$tableCSS}>
+	   // <div class={$tableCSS}>     <xnput type='button'  value='Select' {$selAction} align='right'/>
+	   //<input type='button' id={$spoilerbutton} class={$buttonCSS} value={$show} {$buttonAction} align='right' style='{$gblButtonTextColor}{$gblButtonBkg}{$gblButtonLine}${doShowButtons}'/></th>
+	   $selAction = "onclick='wpSpoilerSelect(\"" . $rowDiv . "\"); return false;'"; 
+	   if ($this->GBL_SHOWSELECT == false)
+	   {
+	   		$selAction = "";
+	   		$doSelButtons = "display:none;";
+	   }
 
-        return <<<ecbCode
+	   $doBorder = "";
+	   if ($this->GBL_CUSTOMCOLORS == true)
+	   {
+	   		$doBorder = "border: 1px inset;";
+	   }
+	   
+       return <<<ecbCode
 {$begin}
 <div class={$tableCSS} style='{$gblLineColor}'>
 
 <table class='easySpoilerTable' border='0' style='text-align:center;' align='center' bgcolor='FFFFFF' >
 
-<tr><th class={$titlea}  style='text-align:left;vertical-align:middle;font-size:120%;{$gblOuterBkg}{$gblLineColor}{$gblTitleColor}' {$titleAction}>{$spoilertitle}</th>
-<th class={$titleb}  style='text-align:right;vertical-align:middle;font-size:100%;{$gblOuterBkg}{$gblLineColor}' {$titleAction}><input type='button' id={$spoilerbutton} class={$buttonCSS} value={$show} {$buttonAction} align='right' style='{$gblButtonTextColor}{$gblButtonBkg}{$gblButtonLine}${doButtons}'/></th>
+<tr><th class={$titlea}  style='text-align:left;vertical-align:middle;font-size:120%;{$gblOuterBkg}{$gblLineColor}{$gblTitleColor}'>{$spoilertitle}</th>
+<th class={$titleb}  style='text-align:right;vertical-align:middle;font-size:100%;{$gblOuterBkg}{$gblLineColor} white-space:nowrap;'>
+<a href='' {$selAction} style='{$gblButtonTextColor}{$gblButtonBkg}{$gblButtonLine} ${doSelButtons} margin: 0px 0px; padding: 1px; ${doBorder}' align='right'>{$this->GBL_SELECT}</a><a href='' {$buttonAction} id={$spoilerbutton} class={$buttonCSS} value={$show} align='right' style='{$gblButtonTextColor}{$gblButtonBkg}{$gblButtonLine}${doShowButtons} margin: 0px 0px 0px 5px; padding: 1px; ${doBorder}"'>{$this->GBL_SHOW}</></th>
 </tr>
-
-<tr><td class='easySpoilerRow' colspan='2' style='{$gblLineColor}'><div><div id='{$rowDiv}' class='easySpoilerSpoils' style='display:none; white-space:wrap; vertical-align:middle;{$gblInnerBkg}${gblInnerTextColor}{$gblLineColor}'>
+<tr><td class='easySpoilerRow' colspan='2' style='{$gblLineColor}'><div id='{$rowDiv}' class='easySpoilerSpoils'  style='display:none; white-space:wrap; overflow:auto; vertical-align:middle;{$gblInnerBkg}${gblInnerTextColor}{$gblLineColor}'>
 {$scontent}
-</div></div></td></tr>
+</div></td></tr>
 </table>
 {$conclude}
 </div>
