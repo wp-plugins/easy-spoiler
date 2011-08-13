@@ -37,6 +37,10 @@ $sections = array(
 				'key' => 'GBL_HIDE', 
 				'help' => 'Text for the hide button' ),
 			(object) array(
+				'title' => 'Select button Text',
+				'key' => 'GBL_SELECT', 
+				'help' => 'Text for the select button' ),
+			(object) array(
 				'title' => 'Perform Animations',
 				'key' => 'GBL_ANIM',
 				'style' => 'max-width: 5em',
@@ -54,7 +58,13 @@ $sections = array(
 				'text' => 'Do not render buttons and instead user clicks on spoiler title',				
 				'help' => 'If checked, a user will click on the title to open and close the spoiler.' ),	
 			(object) array(
-				'title' => 'Refresh IFrames',
+				'title' => 'Show Select Content button',
+				'key' => 'GBL_SHOWSELECT', 
+				'style' => 'max-width: 5em',
+				'text' => 'Provide the reader a select content button',				
+				'help' => 'If checked, a user can click on a select button as a convenience to auto-select the content of a spoiler.' ),					
+			(object) array(
+				'title' => 'Refresh IFrames (beta)',
 				'key' => 'GBL_REFRESHIFRAMES', 
 				'style' => 'max-width: 5em',
 				'text' => 'Scan for and refresh IFrames internal to a spoiler when opened.',				

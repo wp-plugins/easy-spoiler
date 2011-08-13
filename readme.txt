@@ -4,8 +4,8 @@ Contributors: dyerware
 Donate link: http://www.dyerware.com/main/products/easy-spoiler/easy-spoiler-plugin-for-wordpress.html
 Tags: spoiler,hint,tip,answer,hidden,hide,mobile,shortcode,dyerware
 Requires at least: 2.8
-Tested up to: 3.1
-Stable tag: 1.0
+Tested up to: 3.2.1
+Stable tag: 1.1
 
 This plugin allows you to create a container for spoilers within pages, posts, comments, and widgets.  Also supports spoiler groups.
 
@@ -68,6 +68,14 @@ For an up-to-date FAQ, please visit:
 
 == Upgrade Notice ==
 
+= 1.1 =
+ * Flat, more subtle buttons
+ * Option for using title as the show/hide toggle now changes mouse pointer to indicate it is an actionable area
+ * Improved iframe support
+ * new select button option which will provide a 'select' button on the title bar for auto-selecting the 
+   spoiler content.
+ * Admin option to enable/disable select button feature and to configure the text of the select button
+
 = 1.0 =
  * You can now configure the titlebar to be the open/close button.
  * The speed of the spoiler open/close animations can now be customized.
@@ -104,6 +112,14 @@ For an up-to-date FAQ, please visit:
 
 
 == Changelog ==
+
+= 1.1 =
+ * Flat, more subtle buttons
+ * Option for using title as the show/hide toggle now changes mouse pointer to indicate it is an actionable area
+ * Improved iframe support
+ * new select button option which will provide a 'select' button on the title bar for auto-selecting the 
+   spoiler content.
+ * Admin option to enable/disable select button feature and to configure the text of the select button
 
 = 1.0 =
  * You can now configure the titlebar to be the open/close button.
