@@ -50,13 +50,7 @@ $sections = array(
 				'title' => 'Animation Speed',
 				'key' => 'GBL_ANIMATIONSPEED',
 				'pick' => (object)array("fast","slow"),
-				'help' => 'Speed of the spoiler open/close animations.'	),	
-			(object) array(
-				'title' => 'Use Titlebar As Button',
-				'key' => 'GBL_TITLEBARBUTTON', 
-				'style' => 'max-width: 5em',
-				'text' => 'Do not render buttons and instead user clicks on spoiler title',				
-				'help' => 'If checked, a user will click on the title to open and close the spoiler.' ),	
+				'help' => 'Speed of the spoiler open/close animations.'	),		
 			(object) array(
 				'title' => 'Show Select Content button',
 				'key' => 'GBL_SHOWSELECT', 
@@ -70,6 +64,7 @@ $sections = array(
 				'text' => 'Scan for and refresh IFrames internal to a spoiler when opened.',				
 				'help' => 'Some browsers do not refresh iframes correctly when going from hidden to seen.  This will atempt to force a refresh of the iframes contained within a spoiler upon opening it.' ),	
 		)),
+		
 	(object) array(
 		'title' => 'Editor Settings',
 		'help' => 'Choose options related to your blog editor.',
@@ -82,7 +77,33 @@ $sections = array(
 				'help' => 'If checked, buttons for inserting a spoiler or spoilter group are added to your editor.  Select the HTML you want hidden and click on spoiler.  Select the spoilers you want grouped and click on spoilergroup.'),
 		)),		
 	
+	(object) array(
+	'title' => 'Title Style',
+	'help' => 'Customize the styling of the spoiler title.',
 	
+
+	'options' => array(
+	
+		(object) array(
+			'title' => 'Use Titlebar As Button',
+			'key' => 'GBL_TITLEBARBUTTON', 
+			'style' => 'max-width: 5em',
+			'text' => 'Do not render buttons and instead user clicks on spoiler title',				
+			'help' => 'If checked, a user will click on the title to open and close the spoiler.' ),
+			
+		(object) array(
+			'title' => 'Use <b>bold</b> font',
+			'key' => 'GBL_TITLEBOLD', 
+			'style' => 'max-width: 5em',
+			'text' => 'Render the title in a bold font',				
+			'help' => 'If checked, the title will be bold.' ),
+			
+		(object) array(
+			'title' => 'Font Size',
+			'key' => 'GBL_TITLESIZE', 
+			'text' => 'The size of the font (in percent)',				
+			'help' => 'Provide a number as a percent for the title size.  It may be larger than 100 (120 is the default).' ),
+	)),	
 		
 	(object) array(
 		'title' => 'Colors',
@@ -154,8 +175,8 @@ $sections = array(
 			(object) array(
 				'title' => 'Button Style',
 				'key' => 'GBL_BUTTONSTYLE',
-				'pick' => (object)array("Default","No Styling"),
-				'help' => 'The default button type rendered by the plugin.  Use No Styling to have it render natively.'),
+				'pick' => (object)array("Default","No Styling", "Flat"),
+				'help' => 'The default button type rendered by the plugin.  Use No Styling to have it render natively.  Flat will provide a borderless link-style button'),
 	
 			/*
 			(object) array(

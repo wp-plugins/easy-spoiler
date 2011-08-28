@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Easy Spoiler
-Version: 1.1
+Version: 1.5
 Plugin URI: http://www.dyerware.com/main/products/easy-spoiler
 Description: Creates an attractive container to hide a spoiler within a post or page.  Works in comments and widgets as well.  Also supports clustering spoilers into groups.
 Author: dyerware
@@ -70,6 +70,9 @@ class wpEasySpoiler
 	var $GBL_REFRESHIFRAMES = false;
 	var $GBL_ANIMATIONSPEED = 'fast';
 	var $GBL_SHOWSELECT     = true;
+	
+	var $GBL_TITLEBOLD = false;
+	var $GBL_TITLESIZE = 120;
 	
 	
 	var $op; 
@@ -163,7 +166,7 @@ class wpEasySpoiler
 			'GBL_BUTTONSTYLE', 'GBL_OPENBTNIMAGE', 'GBL_CLOSEBTNIMAGE', 'GBL_CUSTOMCOLORS', 'GBL_LINECOLOR',
 			'GBL_TITLECOLOR', 'GBL_OUTERBKGCOLOR', 'GBL_INNERBKGCOLOR', 'GBL_BUTTONCOLOR', 'GBL_BUTTONTEXT',
 			'GBL_INNERTEXTCOLOR', 'GBL_BUTTONLINE', 'GBL_REFRESHIFRAMES', 'GBL_ANIMATIONSPEED', 'GBL_TITLEBARBUTTON', 
-			'GBL_SHOWSELECT', 'GBL_SELECT',
+			'GBL_SHOWSELECT', 'GBL_SELECT', 'GBL_TITLEBOLD', 'GBL_TITLESIZE',
 		);
 		$this->op = (object) array();
 		foreach ($opnames as $name)
@@ -452,6 +455,8 @@ ecbCode;
             }
         }
         
+        $doBorder = "";
+        $gblTitleColor = "color:#000000;";
         if ($this->GBL_CUSTOMCOLORS)
         {
         	$gblLineColor = 'border-color:#' . $this->GBL_LINECOLOR . ';';
@@ -460,10 +465,12 @@ ecbCode;
         	
         	$gblButtonTextColor = 'color:#' . $this->GBL_BUTTONTEXT . ';';
         	$gblButtonBkg = 'background-color:#' . $this->GBL_BUTTONCOLOR . ';background-image:none;';
-        	$gblButtonLine = 'border-color:#' . $this->GBL_BUTTONLINE . ';';
+        	$gblButtonLine = 'border-style:solid;border-color:#' . $this->GBL_BUTTONLINE . ';';
 
         	$gblOuterBkg = 'background-color:#' . $this->GBL_OUTERBKGCOLOR . ';background-image:none;';
         	$gblInnerBkg = 'background-color:#' . $this->GBL_INNERBKGCOLOR . ';background-image:none;';
+        	
+        	$doBorder = "border: 1px inset;";
         }
         
         // some parameters
@@ -477,26 +484,46 @@ ecbCode;
         if ($this->GBL_ANIM)
             $doAnim = 'true';
             
+        // Some styling
+        $titleSize = $this->GBL_TITLESIZE;
+        $fontWeight = "normal";
+        if ($this->GBL_TITLEBOLD)
+        	$fontWeight = "bold";
+        
         $doShowButtons = "";
         $doSelButtons = "";
         $titleAction = "";
         $buttonAction = "onclick='wpSpoilerToggle(" . $rowDiv2 . "," .$doAnim. "," .$show. "," .$hide. "," .$speed. "," .$iframe. "); return false;'";
-        
+       	$buttonCSS = "'easySpoilerButton'";
+	    $buttonOtherCSS = "'easySpoilerButtonOther'";
+	    
         if ($this->GBL_TITLEBARBUTTON)
         {
+        	$buttonOtherCSS = "'easySpoilerButton'";
         	$doShowButtons = "display:none;";
         	$titleAction = $buttonAction . " onselectstart='return false;'";
         	$buttonAction = "";
-        	$spoilertitle = "<a href='' " . $titleAction . ">" . $spoilertitle . "</a>";
+        	$spoilertitle = "<a href='' " . $titleAction . " style='text-decoration: none;" . $gblTitleColor . "'>" . $spoilertitle . "</a>";
         }
         
 	    $begin = "";
 	    $end = "";
 	    $conclude = "";
+	
 	    
 	    if ($this->GBL_BUTTONSTYLE == "Default")
 	 	{
-	    	$buttonCSS = "'easySpoilerButton'";
+	 		if ($this->GBL_CUSTOMCOLORS == false)
+	 		{
+		 		$gblButtonTextColor = 'color:#000000;';
+	        	$gblButtonBkg = 'background-color:#fcfcfc;background-image:none;';
+	        	$gblButtonLine = 'border-style:solid;border-color:#cccccc;';
+	        	$doBorder = "border: 1px inset;";
+	 		}
+	 	}
+	 	else if ($this->GBL_BUTTONSTYLE == "flat")
+	 	{	
+
 	 	}
 	 	else
 	 	{
@@ -540,7 +567,7 @@ ecbCode;
 				$titlea = "'easySpoilerGroup'";
 				$titleb = "'easySpoilerGroup'";
 				
-				if ($this->GBL_BUTTONSTYLE == "Default")
+				if ($this->GBL_BUTTONSTYLE == "Default" || $this->GBL_BUTTONSTYLE == "Classic")
 				{
 					$buttonCSS = "'easySpoilerGroupButton'";
 				}
@@ -562,21 +589,16 @@ ecbCode;
 	   		$doSelButtons = "display:none;";
 	   }
 
-	   $doBorder = "";
-	   if ($this->GBL_CUSTOMCOLORS == true)
-	   {
-	   		$doBorder = "border: 1px inset;";
-	   }
-	   
+
        return <<<ecbCode
 {$begin}
 <div class={$tableCSS} style='{$gblLineColor}'>
 
 <table class='easySpoilerTable' border='0' style='text-align:center;' align='center' bgcolor='FFFFFF' >
 
-<tr><th class={$titlea}  style='text-align:left;vertical-align:middle;font-size:120%;{$gblOuterBkg}{$gblLineColor}{$gblTitleColor}'>{$spoilertitle}</th>
+<tr><th class={$titlea}  style='font-weight:{$fontWeight};text-align:left;vertical-align:middle;font-size:{$titleSize}%;{$gblOuterBkg}{$gblLineColor}{$gblTitleColor}'>{$spoilertitle}</th>
 <th class={$titleb}  style='text-align:right;vertical-align:middle;font-size:100%;{$gblOuterBkg}{$gblLineColor} white-space:nowrap;'>
-<a href='' {$selAction} style='{$gblButtonTextColor}{$gblButtonBkg}{$gblButtonLine} ${doSelButtons} margin: 0px 0px; padding: 1px; ${doBorder}' align='right'>{$this->GBL_SELECT}</a><a href='' {$buttonAction} id={$spoilerbutton} class={$buttonCSS} value={$show} align='right' style='{$gblButtonTextColor}{$gblButtonBkg}{$gblButtonLine}${doShowButtons} margin: 0px 0px 0px 5px; padding: 1px; ${doBorder}"'>{$this->GBL_SHOW}</></th>
+<a href='' {$selAction} class={$buttonOtherCSS} style='font-size:100%;{$gblButtonTextColor}{$gblButtonBkg}${doBorder}{$gblButtonLine} ${doSelButtons} margin: 3px 0px 3px; padding: 4px; ' align='right'>{$this->GBL_SELECT}</a><a href='' {$buttonAction} id={$spoilerbutton} class={$buttonCSS} value={$show} align='right' style='font-size:100%;{$gblButtonTextColor}{$gblButtonBkg}${doBorder}{$gblButtonLine}${doShowButtons} margin: 3px 0px 3px 5px; padding: 4px;"'>{$this->GBL_SHOW}</></th>
 </tr>
 <tr><td class='easySpoilerRow' colspan='2' style='{$gblLineColor}'><div id='{$rowDiv}' class='easySpoilerSpoils'  style='display:none; white-space:wrap; overflow:auto; vertical-align:middle;{$gblInnerBkg}${gblInnerTextColor}{$gblLineColor}'>
 {$scontent}
