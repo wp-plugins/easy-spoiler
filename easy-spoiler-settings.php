@@ -97,12 +97,32 @@ $sections = array(
 			'style' => 'max-width: 5em',
 			'text' => 'Render the title in a bold font',				
 			'help' => 'If checked, the title will be bold.' ),
-			
+	
 		(object) array(
 			'title' => 'Font Size',
 			'key' => 'GBL_TITLESIZE', 
 			'text' => 'The size of the font (in percent)',				
 			'help' => 'Provide a number as a percent for the title size.  It may be larger than 100 (120 is the default).' ),
+			
+		(object) array(
+			'title' => 'Embed shortcodes within Title',
+			'key' => 'GBL_TITLEPARSE', 
+			'style' => 'max-width: 5em',
+			'text' => 'Tells Easy Spoiler to parse the spoiler title for additional embedded shortcodes.',				
+			'help' => 'If checked, ensure you set the open and close tokens below.  You must choose tokens different than the angular brackets [, ].  For example, you may use (, ):  (myshortcode)xx(/myshortcode)' ),
+			
+		(object) array(
+			'title' => 'Shortcode Open character',
+			'key' => 'GBL_TITLEPARSECHAROPEN', 
+			'text' => 'The character to start a Title shortcode with.  [ is disallowed.',				
+			'help' => 'Relevant only if Embed Shortcodes Within Title is entabled.  This is the character (or string) to match signifying the start of a shortcode.   Do not use brackets.' ),
+
+		(object) array(
+			'title' => 'Shortcode Close character',
+			'key' => 'GBL_TITLEPARSECHARCLOSE', 
+			'text' => 'The character to end a Title shortcode with.  ] is disallowed.',				
+			'help' => 'Relevant only if Embed Shortcodes Within Title is entabled.  This is the character (or string) to match signifying the end of a shortcode.   Do not use brackets.' ),
+
 	)),	
 		
 	(object) array(
