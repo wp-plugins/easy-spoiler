@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Easy Spoiler
-Version: 1.5
+Version: 1.6
 Plugin URI: http://www.dyerware.com/main/products/easy-spoiler
 Description: Creates an attractive container to hide a spoiler within a post or page.  Works in comments and widgets as well.  Also supports clustering spoilers into groups.
 Author: dyerware
@@ -73,6 +73,10 @@ class wpEasySpoiler
 	
 	var $GBL_TITLEBOLD = false;
 	var $GBL_TITLESIZE = 120;
+	
+	var $GBL_TITLEPARSE = false;
+	var $GBL_TITLEPARSECHAROPEN =  '(';
+	var $GBL_TITLEPARSECHARCLOSE = ')';
 	
 	
 	var $op; 
@@ -166,7 +170,8 @@ class wpEasySpoiler
 			'GBL_BUTTONSTYLE', 'GBL_OPENBTNIMAGE', 'GBL_CLOSEBTNIMAGE', 'GBL_CUSTOMCOLORS', 'GBL_LINECOLOR',
 			'GBL_TITLECOLOR', 'GBL_OUTERBKGCOLOR', 'GBL_INNERBKGCOLOR', 'GBL_BUTTONCOLOR', 'GBL_BUTTONTEXT',
 			'GBL_INNERTEXTCOLOR', 'GBL_BUTTONLINE', 'GBL_REFRESHIFRAMES', 'GBL_ANIMATIONSPEED', 'GBL_TITLEBARBUTTON', 
-			'GBL_SHOWSELECT', 'GBL_SELECT', 'GBL_TITLEBOLD', 'GBL_TITLESIZE',
+			'GBL_SHOWSELECT', 'GBL_SELECT', 'GBL_TITLEBOLD', 'GBL_TITLESIZE', 'GBL_TITLEPARSE', 'GBL_TITLEPARSECHAROPEN',
+			'GBL_TITLEPARSECHARCLOSE',
 		);
 		$this->op = (object) array();
 		foreach ($opnames as $name)
@@ -390,7 +395,7 @@ ecbCode;
     	       $keyval = (int)$key;
     	       if ($keyval != 0 || strpos($key, "0") === 0)
     	       {
-                    $haveIssue = TRUE;
+                    //$haveIssue = TRUE;
                     $nearKey = $keyval;
                     $nearValue = $att;
                     break;
@@ -410,8 +415,7 @@ ecbCode;
 
 	    // Translate strings to numerics
 	    array_walk($spoilerConfig, array($this, 'translate_numerics'));
-	         
-	       	       
+	                       
 	    $this->spoilerNum++;
 	    
 	    $randomatic = mt_rand(0,0x7fff);
@@ -434,7 +438,15 @@ ecbCode;
 		}
 		else
 		{
-		  $spoilertitle = $spoilerConfig['intro'] . ': ' . $spoilerConfig['title'];
+			// Use embedded shortcodes within title?
+			if ($this->GBL_TITLEPARSE)
+			{
+				$spoilerConfig['title'] = str_replace($this->GBL_TITLEPARSECHAROPEN,  "[", $spoilerConfig['title']);
+				$spoilerConfig['title'] = str_replace($this->GBL_TITLEPARSECHARCLOSE, "]", $spoilerConfig['title']);
+				$spoilerConfig['title'] = do_shortcode($spoilerConfig['title']);
+			}
+			
+			$spoilertitle = $spoilerConfig['intro'] . ': ' . $spoilerConfig['title'];
 		}
 		  
 		$tableCSS = "'" . $spoilerConfig['tablecss'] . "'";			
