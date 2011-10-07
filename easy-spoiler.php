@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Easy Spoiler
-Version: 1.6
+Version: 1.6.2
 Plugin URI: http://www.dyerware.com/main/products/easy-spoiler
 Description: Creates an attractive container to hide a spoiler within a post or page.  Works in comments and widgets as well.  Also supports clustering spoilers into groups.
 Author: dyerware
@@ -77,6 +77,12 @@ class wpEasySpoiler
 	var $GBL_TITLEPARSE = false;
 	var $GBL_TITLEPARSECHAROPEN =  '(';
 	var $GBL_TITLEPARSECHARCLOSE = ')';
+	var $GBL_TITLEWRAP = true;
+	
+	/*
+	var $GBL_BORDERWIDTH = 0;
+	var $GBL_BORDERSTYLE = "none";
+	*/
 	
 	
 	var $op; 
@@ -171,7 +177,7 @@ class wpEasySpoiler
 			'GBL_TITLECOLOR', 'GBL_OUTERBKGCOLOR', 'GBL_INNERBKGCOLOR', 'GBL_BUTTONCOLOR', 'GBL_BUTTONTEXT',
 			'GBL_INNERTEXTCOLOR', 'GBL_BUTTONLINE', 'GBL_REFRESHIFRAMES', 'GBL_ANIMATIONSPEED', 'GBL_TITLEBARBUTTON', 
 			'GBL_SHOWSELECT', 'GBL_SELECT', 'GBL_TITLEBOLD', 'GBL_TITLESIZE', 'GBL_TITLEPARSE', 'GBL_TITLEPARSECHAROPEN',
-			'GBL_TITLEPARSECHARCLOSE',
+			'GBL_TITLEPARSECHARCLOSE','GBL_TITLEWRAP',
 		);
 		$this->op = (object) array();
 		foreach ($opnames as $name)
@@ -446,7 +452,10 @@ ecbCode;
 				$spoilerConfig['title'] = do_shortcode($spoilerConfig['title']);
 			}
 			
-			$spoilertitle = $spoilerConfig['intro'] . ': ' . $spoilerConfig['title'];
+			if ($spoilerConfig['intro'] == '')
+				$spoilertitle = $spoilerConfig['title'];
+			else
+				$spoilertitle = $spoilerConfig['intro'] . ': ' . $spoilerConfig['title'];
 		}
 		  
 		$tableCSS = "'" . $spoilerConfig['tablecss'] . "'";			
@@ -502,6 +511,10 @@ ecbCode;
         if ($this->GBL_TITLEBOLD)
         	$fontWeight = "bold";
         
+        $titleWrap = "normal";
+        if ($this->GBL_TITLEWRAP == false)
+        	$titleWrap = "nowrap";
+        	
         $doShowButtons = "";
         $doSelButtons = "";
         $titleAction = "";
@@ -601,15 +614,21 @@ ecbCode;
 	   		$doSelButtons = "display:none;";
 	   }
 
+	   $hideButtons = "";
+	   if ($this->GBL_SHOWSELECT == false && $this->GBL_TITLEBARBUTTON)
+	   {
+	   	$hideButtons = "padding:0px;";
+	   }
+	   	
+//border-style:{$this->GBL_BORDERSTYLE}; border:{$this->GBL_BORDERWIDTH}px; 
 
        return <<<ecbCode
 {$begin}
 <div class={$tableCSS} style='{$gblLineColor}'>
-
 <table class='easySpoilerTable' border='0' style='text-align:center;' align='center' bgcolor='FFFFFF' >
 
-<tr><th class={$titlea}  style='font-weight:{$fontWeight};text-align:left;vertical-align:middle;font-size:{$titleSize}%;{$gblOuterBkg}{$gblLineColor}{$gblTitleColor}'>{$spoilertitle}</th>
-<th class={$titleb}  style='text-align:right;vertical-align:middle;font-size:100%;{$gblOuterBkg}{$gblLineColor} white-space:nowrap;'>
+<tr style='white-space:{$titleWrap};'><th class={$titlea}  style='white-space:{$titleWrap};font-weight:{$fontWeight};text-align:left;vertical-align:middle;font-size:{$titleSize}%;{$gblOuterBkg}{$gblLineColor}{$gblTitleColor}'>{$spoilertitle}</th>
+<th class={$titleb}  style='{$hideButtons}text-align:right;vertical-align:middle;font-size:100%;{$gblOuterBkg}{$gblLineColor} white-space:nowrap;'>
 <a href='' {$selAction} class={$buttonOtherCSS} style='font-size:100%;{$gblButtonTextColor}{$gblButtonBkg}${doBorder}{$gblButtonLine} ${doSelButtons} margin: 3px 0px 3px; padding: 4px; ' align='right'>{$this->GBL_SELECT}</a><a href='' {$buttonAction} id={$spoilerbutton} class={$buttonCSS} value={$show} align='right' style='font-size:100%;{$gblButtonTextColor}{$gblButtonBkg}${doBorder}{$gblButtonLine}${doShowButtons} margin: 3px 0px 3px 5px; padding: 4px;"'>{$this->GBL_SHOW}</></th>
 </tr>
 <tr><td class='easySpoilerRow' colspan='2' style='{$gblLineColor}'><div id='{$rowDiv}' class='easySpoilerSpoils'  style='display:none; white-space:wrap; overflow:auto; vertical-align:middle;{$gblInnerBkg}${gblInnerTextColor}{$gblLineColor}'>

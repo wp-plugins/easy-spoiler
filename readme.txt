@@ -5,7 +5,7 @@ Donate link: http://www.dyerware.com/main/products/easy-spoiler/easy-spoiler-plu
 Tags: spoiler,hint,tip,answer,hidden,hide,mobile,shortcode,dyerware
 Requires at least: 2.8
 Tested up to: 3.2.1
-Stable tag: 1.6
+Stable tag: 1.6.2
 
 This plugin allows you to create a container for spoilers within pages, posts, comments, and widgets.  Also supports spoiler groups.
 
@@ -68,6 +68,11 @@ For an up-to-date FAQ, please visit:
 
 == Upgrade Notice ==
 
+= 1.6.2 =
+ * Fix for fireFox show button not changing to 'hide'
+ * Fix for spoiler group aesthetics where padding was incorrect
+ * Removed dashed inner border
+
 = 1.6 =
  * You can now embed shortcodes within the spoiler title via a new enable/disable checkbox on the admin panel.  Note you cannot use the angular brackets.  Rather, you use parens: (myshortcode)xxx(/myshortcode).  You can replace the use of parens with something else in the admin panel as well.
 
@@ -121,6 +126,11 @@ For an up-to-date FAQ, please visit:
 
 
 == Changelog ==
+
+= 1.6.2 =
+ * Fix for fireFox show button not changing to 'hide'
+ * Fix for spoiler group aesthetics where padding was incorrect
+ * Removed dashed inner border
 
 = 1.6 =
  * You can now embed shortcodes within the spoiler title via a new enable/disable checkbox on the admin panel.  Note you cannot use the angular brackets.  Rather, you use parens: (myshortcode)xxx(/myshortcode).  You can replace the use of parens with something else in the admin panel as well.
