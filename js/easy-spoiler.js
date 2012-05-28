@@ -1,6 +1,6 @@
 /**
  * Handle: easySpoiler
- * Version: 1.1
+ * Version: 1.2
  * Enqueue: true
  *
  * Author: dyerware
@@ -23,14 +23,13 @@ function wpSpoilerToggle(id, doAnim, showName, hideName, speed, doIframes)
         else
             {e.style.display = 'none';}
             
+
+        b.nodeValue=showName;
+        b.innerText=showName;
+        
         if (navigator.userAgent.indexOf("Firefox")!=-1)
         {
         	b.firstChild.nodeValue=showName;
-        }
-        else
-        {
-	        b.nodeValue=showName;
-	        b.innerText=showName;
         }
         
     }
@@ -40,17 +39,15 @@ function wpSpoilerToggle(id, doAnim, showName, hideName, speed, doIframes)
             {jQuery("#" + id).fadeIn(speed);} 
         e.style.display = 'block';
         
+	    b.value=hideName;
+	    b.innerText=hideName;
+        
         if (navigator.userAgent.indexOf("Firefox")!=-1)
         {
         	b.firstChild.nodeValue=hideName;
         }
-        else
-        {
-	        b.value=hideName;
-	        b.innerText=hideName;
-        }   
         
-        if (doIframes)
+        if (doIframes && doIframes != "false")
        	{
        		jQuery("#" + id).find('iframe').each(function(i) {autoResize(this);});
        		//jQuery("#" + id).find('iframe').each(function(i) {this.src = this.src;});
@@ -80,14 +77,12 @@ function wpSpoilerHide(id, doAnim, showName, speed)
             {jQuery("#" + id).slideUp(speed);}
         e.style.display = 'none';
         
+        me.value=showName;
+        me.innerText=showName;
+	        
         if (navigator.userAgent.indexOf("Firefox")!=-1)
         {
-        	b.firstChild.nodeValue=showName;
-        }
-        else
-        {
-	        me.value=showName;
-	        me.innerText=showName;
+        	me.firstChild.nodeValue=showName;
         }
     }
 }
