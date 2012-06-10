@@ -4,8 +4,8 @@ Contributors: dyerware
 Donate link: http://www.dyerware.com/main/products/easy-spoiler/easy-spoiler-plugin-for-wordpress.html
 Tags: spoiler,hint,tip,answer,hidden,hide,mobile,shortcode,dyerware
 Requires at least: 2.8
-Tested up to: 3.3.1
-Stable tag: 1.6.3
+Tested up to: 3.3.2
+Stable tag: 1.7
 
 This plugin allows you to create a container for spoilers within pages, posts, comments, and widgets.  Also supports spoiler groups.
 
@@ -68,6 +68,12 @@ For an up-to-date FAQ, please visit:
 
 == Upgrade Notice ==
 
+= 1.7 =
+ * Support for Right-to-Left languages and format.  Option is located on admin panel under 'global defaults'.
+ * Support to use your theme's native text color for spoiler title and button text when using easyspoiler's native theme.
+   Note this feature is ignored if you have enabled custom colors.  The button and title theme enable options are located
+   on the admin panel in title and button options, respectively.
+ 
 = 1.6.3 =
  * Fix for fireFox issue with spoilergroups causing a reload of the page when opened.
 
@@ -130,6 +136,12 @@ For an up-to-date FAQ, please visit:
 
 == Changelog ==
 
+= 1.7 =
+ * Support for Right-to-Left languages and format.  Option is located on admin panel under 'global defaults'.
+ * Support to use your theme's native text color for spoiler title and button text when using easyspoiler's native theme.
+   Note this feature is ignored if you have enabled custom colors.  The button and title theme enable options are located
+   on the admin panel in title and button options, respectively.
+   
 = 1.6.3 =
  * Fix for fireFox issue with spoilergroups causing a reload of the page when opened.
  
