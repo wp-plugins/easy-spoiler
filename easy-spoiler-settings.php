@@ -46,23 +46,47 @@ $sections = array(
 				'style' => 'max-width: 5em',
 				'text' => 'Do Animations',
 				'help' => 'You can turn off animations that use the jQuery library if you suspect a plugin conflict, or if you want faster open/close action.' ),		
+
 			(object) array(
 				'title' => 'Animation Speed',
 				'key' => 'GBL_ANIMATIONSPEED',
 				'pick' => (object)array("fast","slow"),
 				'help' => 'Speed of the spoiler open/close animations.'	),		
+/*
+			(object) array(
+				'title' => 'Inner Border',
+				'key' => 'GBL_BORDERSTYLE',
+				'pick' => (object)array("none", "solid", "dotted", "dashed", "double", "ridge", "inset", "outset"),
+				'text' => 'Style of the border surrounding the Spoiler contents',
+				'help' => 'The border width in pixels.  To not show a border, enter 0.'	),	
+					
+			(object) array(
+				'title' => 'Inner Border Size',
+				'key' => 'GBL_BORDERWIDTH',
+				'text' => 'Size of the border surrounding the Spoiler contents',
+				'help' => 'The border width in pixels.'	),	
+*/
+				
 			(object) array(
 				'title' => 'Show Select Content button',
 				'key' => 'GBL_SHOWSELECT', 
 				'style' => 'max-width: 5em',
 				'text' => 'Provide the reader a select content button',				
-				'help' => 'If checked, a user can click on a select button as a convenience to auto-select the content of a spoiler.' ),					
+				'help' => 'If checked, a user can click on a select button as a convenience to auto-select the content of a spoiler.' ),
+									
 			(object) array(
 				'title' => 'Refresh IFrames (beta)',
 				'key' => 'GBL_REFRESHIFRAMES', 
 				'style' => 'max-width: 5em',
 				'text' => 'Scan for and refresh IFrames internal to a spoiler when opened.',				
 				'help' => 'Some browsers do not refresh iframes correctly when going from hidden to seen.  This will atempt to force a refresh of the iframes contained within a spoiler upon opening it.' ),	
+
+			(object) array(
+				'title' => 'Right-to-Left language',
+				'key' => 'GBL_RTOL', 
+				'style' => 'max-width: 5em',
+				'text' => 'Place the show/hide button on the left side of the spoiler.',				
+				'help' => 'If checked, the title will be placed on the right and the button on the left.' ),
 		)),
 		
 	(object) array(
@@ -103,7 +127,21 @@ $sections = array(
 			'key' => 'GBL_TITLESIZE', 
 			'text' => 'The size of the font (in percent)',				
 			'help' => 'Provide a number as a percent for the title size.  It may be larger than 100 (120 is the default).' ),
+	
+		(object) array(
+			'title' => 'Use wordpress theme native text color',
+			'key' => 'GBL_TITLEUSETHEME', 
+			'style' => 'max-width: 5em',
+			'text' => 'Render the title text using wordpress theme color',				
+			'help' => 'If checked, the title text color will be derived from wordpress theme colors.' ),
 			
+		(object) array(
+			'title' => 'Allow Wrapping',
+			'key' => 'GBL_TITLEWRAP', 
+			'style' => 'max-width: 5em',
+			'text' => 'Check this if you want long titles to wrap, rather than an elongated single line.',				
+			'help' => 'The default behavior is to perform wrapping of long titles.  If you wish to dictate no wrapping, uncheck this.  If you enable the shortcode parsing within titles you may want to disable wrapping.' ),
+					
 		(object) array(
 			'title' => 'Embed shortcodes within Title',
 			'key' => 'GBL_TITLEPARSE', 
@@ -127,7 +165,7 @@ $sections = array(
 		
 	(object) array(
 		'title' => 'Colors',
-		'help' => 'These settings change color defaults.',
+		'help' => 'These settings change color defaults.  They overide any other choices made on this page regarding color.',
 		'options' => array(
 		
 		
@@ -198,6 +236,13 @@ $sections = array(
 				'pick' => (object)array("Default","No Styling", "Flat"),
 				'help' => 'The default button type rendered by the plugin.  Use No Styling to have it render natively.  Flat will provide a borderless link-style button'),
 	
+			(object) array(
+				'title' => 'Use wordpress theme native text color',
+				'key' => 'GBL_BUTTONTEXTUSETHEME', 
+				'style' => 'max-width: 5em',
+				'text' => 'Render the button text using wordpress theme color',				
+				'help' => 'If checked, the button text color will be derived from wordpress theme colors' ),
+			
 			/*
 			(object) array(
 				'title' => 'Image for the Show button',
