@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Easy Spoiler
-Version: 1.7
+Version: 1.8
 Plugin URI: http://www.dyerware.com/main/products/easy-spoiler
 Description: Creates an attractive container to hide a spoiler within a post or page.  Works in comments and widgets as well.  Also supports clustering spoilers into groups.
 Author: dyerware
@@ -107,7 +107,8 @@ class wpEasySpoiler
 	   }       
 	   
 	   if (strpos($_SERVER['REQUEST_URI'], 'post.php') || strpos($_SERVER['REQUEST_URI'], 'post-new.php') || strpos($_SERVER['REQUEST_URI'], 'page-new.php') || strpos($_SERVER['REQUEST_URI'], 'page.php') || strpos($_SERVER['REQUEST_URI'], 'comment.php')) {
-			add_action('admin_footer', array(&$this, 'init_html_editor_tags'));
+			//add_action('admin_footer', array(&$this, 'init_html_editor_tags'));
+			add_action('admin_print_footer_scripts', array(&$this, 'init_html_editor_tags'), 100 );
 		}               
     }
 
@@ -259,12 +260,18 @@ class wpEasySpoiler
 
     function init_html_editor_tags()
     {
-        
+    	       
         if (is_admin() == true && $this->GBL_EDITORBUTTONS == true)
         {    
             echo '<script type="text/javascript">';
 ?>
-if (gac_edbar=document.getElementById("ed_toolbar") ) 
+
+if ( typeof QTags != 'undefined' )
+{
+	QTags.addButton( 'dyerware_easyspoiler', 'Spoiler', '[spoiler]', '[/spoiler]', '');
+}
+
+else if (gac_edbar=document.getElementById("ed_toolbar") ) 
 {
 	if(typeof edButtons!="undefined")
 	{
@@ -299,9 +306,10 @@ if (gac_edbar=document.getElementById("ed_toolbar") )
 		gac_edbar.appendChild(gac_But);
 	}
 }
+
 <?php
             echo '</script>';
-        }        
+        }      
     }
     
 	public function process_group($atts, $content=null, $code="") 
