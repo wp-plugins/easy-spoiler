@@ -250,7 +250,7 @@ background: url(images/shadetop.gif) left top;
 }
 
 th.easySpoilerTitleA
-{line-height: 100%;}
+{line-height: 150%;}
 
 a.easySpoilerTitleA:hover
 {
@@ -281,6 +281,9 @@ border:0px;
 border-bottom: 1px solid #ddd;	
 background: url(images/shadetop.gif) left top;
 }
+
+th.easySpoilerTitleB
+{line-height: 150%;}
 
 .easySpoilerGroup
 {
@@ -360,3 +363,10 @@ margin-left:auto; margin-right:auto;text-align:justify;}
 {margin:1px 0px;padding:0px;border:0;outline:5px;font-size:100%;vertical-align:middle;
 border-collapse:collapse; border-spacing:1px; border-color:#AAAAAA; border-style:solid;
 margin-left:auto; margin-right:auto;text-align:justify;}
+
+td.easySpoilerEnd
+{padding:0px;border:0px;line-height:100%;}
+
+th.easySpoilerEnd
+{padding:0px;border:0px;line-height:100%;}
+
