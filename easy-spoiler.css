@@ -93,6 +93,9 @@ border-collapse:collapse; border-spacing:1px; border-color:#AAAAAA; border-style
 margin-left:auto; margin-right:auto;text-align:justify;
 }
 
+td.easySpoilerGroupWrapperLastRow
+{margin:0px 0px;padding:5px 0px 0px 0px;border:0;outline:0px;}
+
 .easySpoilerGroupWrapper
 {
 -moz-border-radius: 0px;
@@ -246,6 +249,9 @@ border-bottom: 1px solid #ddd;
 background: url(images/shadetop.gif) left top;
 }
 
+th.easySpoilerTitleA
+{line-height: 100%;}
+
 a.easySpoilerTitleA:hover
 {
  text-decoration: none;
@@ -334,10 +340,16 @@ background: url(images/shadebottom.gif) repeat-x left bottom;
 border-collapse:collapse; border-spacing:0px; border-color:#AAAAAA;
 margin-left:auto; margin-right:auto; width:100%;background:transparent;}
 
+table.easySpoilerTable
+{margin:0px 0px;padding:0px;border:0px;outline:0px;}
+
 .easySpoilerRow
 {margin:1px 0px;padding:0px;border:0;outline:5px;font-size:100%;vertical-align:middle;
 border-collapse:collapse; border-spacing:1px;
 margin-left:auto; margin-right:auto;text-align:justify;}
+
+td.easySpoilerRow
+{margin:0px 0px;padding:0px;border:0px;outline:0px;}
 
 .easySpoilerSpoils
 {margin:0px 0px;padding:5px;outline:0px;font-size:100%;vertical-align:middle;
