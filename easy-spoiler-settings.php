@@ -282,8 +282,9 @@ dd .caveat { font-weight: bold; color: #C00; text-align: center }
 <div class="wrap">
 <div id="icon-options-general" class="icon32"><br /></div>
 <h2>Easy Spoiler by dyerware</h2>
-
-<p><a href="http://itunes.apple.com/us/app/feedhopper-rss-reader/id361881998?mt=8"><img border="0" src="http://www.dyerware.com/images/624x58-Ad.jpg" height="50"></a></p>
+<?php
+include 'dyerware-adm-hlp.php';
+?>
 
 <?php
 include 'dyerware-adm.php';

@@ -68,7 +68,7 @@ For an up-to-date FAQ, please visit:
 
 == Upgrade Notice ==
 
-= 1.8 =
+= 1.9 =
  * Fix: some CSS hardening against aggressive wordpress themes
 
 = 1.8 =
@@ -142,7 +142,7 @@ For an up-to-date FAQ, please visit:
 
 == Changelog ==
 
-= 1.8 =
+= 1.9 =
  * Fix: some CSS hardening against aggressive wordpress themes
  
 = 1.8 =
